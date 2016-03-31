@@ -91,7 +91,7 @@ class Renamer
                 $content = file_get_contents($path_item);
                 $new_content = $this->str_replace_custom($content);
                 if ($new_content != $content && file_put_contents($path_item, $new_content)) {
-                    echo ' [REPLACED] ';
+                    echo ' <span class="label label-warning">Replaced</span> ';
                 }
                 echo '</li>';
             }
@@ -108,7 +108,8 @@ class Renamer
     {
         $new_name = $this->str_replace_custom($item);
         if ($new_name != $item && rename($path . '/' . $item, $path . '/' . $new_name)) {
-            echo ' >> ' . $new_name;
+            echo ' <span class="glyphicon glyphicon-menu-right"></span>  ' . $new_name;
+            echo ' <span class="label label-danger">Renamed</span> ';
             return $path . '/' . $new_name;
         } else {
             return $path . '/' . $item;
@@ -159,8 +160,9 @@ class Renamer
 </head>
 <body style="background: #473E48; padding: 30px 0;">
 <div class="container" style="background: #ffffff; border-radius: 2px; padding-top: 15px; padding-bottom: 15px; ">
-    <h1>Boilerplate Renamer</h1>
-
+    <div class="page-header">
+        <h1>Boilerplate Renamer</h1>
+    </div>
     <?php
 
     $renameObject = new Renamer();
@@ -169,13 +171,15 @@ class Renamer
      * You can generate this with next three lines. Or add another search-replace items to array to the beginning or to the end, but after generation of replace array.
      */
 
-    $renameObject->search = 'Twenty Fifteen';
-    $renameObject->replace = 'Twenty Something';
+    $renameObject->search = 'Plugin Name';
+    $renameObject->replace = 'Subscribtion Industry';
     $renameObject->generate_replace_array();
     $renameObject->replace_array = array_merge($renameObject->replace_array, array(
-        $renameObject->search.':' => 'Plugin Name:', //Fix plugin description replacement
-        'Your Name or Your Company' => 'Eugen Bobrowski from Soft Industry Inc.',
-        'http://example.com/' => 'http://soft-industry.com/',
+        $renameObject->search . ':' => 'Plugin Name:', //Fix plugin description replacement
+        'WordPress Plugin Boilerplate' => $renameObject->replace,
+        'Your Name or Your Company' => 'Your Name or Your Company',
+        'http://example.com/' => 'http://example.com/',
+
     ));
     $renameObject->addIgnore('.//.git');
 
