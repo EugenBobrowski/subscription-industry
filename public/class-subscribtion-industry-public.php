@@ -52,6 +52,7 @@ class Plugin_Name_Public {
 		$this->subscribtion_industry = $subscribtion_industry;
 		$this->version = $version;
 
+		add_action('widgets_init', array($this, 'define_widget'));
 	}
 
 	/**
@@ -98,6 +99,11 @@ class Plugin_Name_Public {
 
 		wp_enqueue_script( $this->subscribtion_industry, plugin_dir_url( __FILE__ ) . 'js/subscribtion-industry-public.js', array( 'jquery' ), $this->version, false );
 
+	}
+
+	public function define_widget () {
+		include_once 'widget-subscribe.php';
+		register_widget('SI_Subscribe_Widget');
 	}
 
 }
