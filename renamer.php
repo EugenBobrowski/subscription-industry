@@ -191,6 +191,7 @@ class Renamer
 
     ));
     $renameObject->addIgnore('.//.git');
+    $renameObject->addIgnore('.//node_modules');
 
     /**
      * Run the renaming process

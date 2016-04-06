@@ -10,7 +10,7 @@
  *
  * @link              http://example.com
  * @since             1.0.0
- * @package           Plugin_Name
+ * @package           Subscribtion_Industry
  *
  * @wordpress-plugin
  * Plugin Name:       Subscribtion Industry
@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  */
 function activate_subscribtion_industry() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-subscribtion-industry-activator.php';
-	Plugin_Name_Activator::activate();
+	Subscribtion_Industry_Activator::activate();
 }
 
 /**
@@ -45,7 +45,7 @@ function activate_subscribtion_industry() {
  */
 function deactivate_subscribtion_industry() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-subscribtion-industry-deactivator.php';
-	Plugin_Name_Deactivator::deactivate();
+	Subscribtion_Industry_Deactivator::deactivate();
 }
 
 register_activation_hook( __FILE__, 'activate_subscribtion_industry' );
@@ -68,7 +68,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-subscribtion-industry.php'
  */
 function run_subscribtion_industry() {
 
-	$plugin = new Plugin_Name();
+	$plugin = new Subscribtion_Industry();
 	$plugin->run();
 
 }

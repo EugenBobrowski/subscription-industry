@@ -6,8 +6,8 @@
  * @link       http://example.com
  * @since      1.0.0
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/admin
+ * @package    Subscribtion_Industry
+ * @subpackage Subscribtion_Industry/admin
  */
 
 /**
@@ -16,8 +16,8 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/admin
+ * @package    Subscribtion_Industry
+ * @subpackage Subscribtion_Industry/admin
  * @author     Your Name <email@example.com>
  */
 class Subscribtion_Industry_Admin
@@ -73,10 +73,10 @@ class Subscribtion_Industry_Admin
          * This function is provided for demonstration purposes only.
          *
          * An instance of this class should be passed to the run() function
-         * defined in Plugin_Name_Loader as all of the hooks are defined
+         * defined in Subscribtion_Industry_Loader as all of the hooks are defined
          * in that particular class.
          *
-         * The Plugin_Name_Loader will then create the relationship
+         * The Subscribtion_Industry_Loader will then create the relationship
          * between the defined hooks and the functions defined in this
          * class.
          */
@@ -98,10 +98,10 @@ class Subscribtion_Industry_Admin
          * This function is provided for demonstration purposes only.
          *
          * An instance of this class should be passed to the run() function
-         * defined in Plugin_Name_Loader as all of the hooks are defined
+         * defined in Subscribtion_Industry_Loader as all of the hooks are defined
          * in that particular class.
          *
-         * The Plugin_Name_Loader will then create the relationship
+         * The Subscribtion_Industry_Loader will then create the relationship
          * between the defined hooks and the functions defined in this
          * class.
          */

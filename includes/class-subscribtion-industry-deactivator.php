@@ -6,8 +6,8 @@
  * @link       http://example.com
  * @since      1.0.0
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
+ * @package    Subscribtion_Industry
+ * @subpackage Subscribtion_Industry/includes
  */
 
 /**
@@ -16,11 +16,11 @@
  * This class defines all code necessary to run during the plugin's deactivation.
  *
  * @since      1.0.0
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
+ * @package    Subscribtion_Industry
+ * @subpackage Subscribtion_Industry/includes
  * @author     Your Name <email@example.com>
  */
-class Plugin_Name_Deactivator {
+class Subscribtion_Industry_Deactivator {
 
 	/**
 	 * Short Description. (use period)
