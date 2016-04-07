@@ -53,6 +53,7 @@ class Subscribtion_Industry_Public {
 		$this->version = $version;
 
 		add_action('widgets_init', array($this, 'define_widget'));
+		add_action('wp', array($this, 'confirm_key'));
 	}
 
 	/**
@@ -104,6 +105,24 @@ class Subscribtion_Industry_Public {
 	public function define_widget () {
 		include_once 'widget-subscribe.php';
 		register_widget('SI_Subscribe_Widget');
+	}
+
+	public function confirm_key () {
+		global $wp_query;
+
+		var_dump($wp_query);
+
+		if (isset($_GET['confirm_subscribtion']) && is_page()) {
+			set_query_var('page_id', 2);
+//			query_posts(array('page_id' => 2));
+		}
+
+	}
+	public function replace_title_on_confirm ($title) {
+		return 'Subscribtion industry';
+	}
+	public function replace_template_on_confirm ($template) {
+		return get_page_template();
 	}
 
 }

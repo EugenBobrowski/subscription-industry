@@ -39,6 +39,7 @@ class Subscribtion_Industry_Activator
 	  id int(11) NOT NULL AUTO_INCREMENT,
       name varchar(255) DEFAULT NULL,
       user_id int(11),
+      activation_key varchar(255),
       UNIQUE KEY id (id)
 	);
 	";

@@ -174,10 +174,23 @@ class SI_Subscribe_Widget extends WP_Widget {
                 $(document).ready(function ($) {
                     siSubscribeForms = $('.si-widget-form');
 
+
+
+
                     var do_ajax = function (data) {
                         if (typeof data == 'undefined') {
                             data = {}
                         }
+                        var pattern_email = /^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$/i;
+
+                        if (!$.trim(data.email).length || !pattern_email.test(data.email)) {
+                            console.log('invalid mail');
+                            siSubscribeForms.prepend('Email is not valid');
+                            return;
+                        } else {
+
+                        }
+
 
                         $.post(siFormAjax.url, data, function (response) {
                             console.log(response);
