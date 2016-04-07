@@ -20,19 +20,31 @@
  * @subpackage Subscribtion_Industry/includes
  * @author     Your Name <email@example.com>
  */
-class Subscribtion_Industry_Activator {
+class Subscribtion_Industry_Activator
+{
 
-	/**
-	 * Short Description. (use period)
-	 *
-	 * Long Description.
-	 *
-	 * @since    1.0.0
-	 */
-	public static function activate() {
+    /**
+     * Short Description. (use period)
+     *
+     * Long Description.
+     *
+     * @since    1.0.0
+     */
+    public static function activate()
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'si_subscribers';
+        $sql = "
+	CREATE TABLE $table_name (
+	  id int(11) NOT NULL AUTO_INCREMENT,
+      name varchar(255) DEFAULT NULL,
+      user_id int(11),
+      UNIQUE KEY id (id)
+	);
+	";
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
 
-
-
-	}
 
 }
