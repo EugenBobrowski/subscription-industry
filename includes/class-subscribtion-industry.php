@@ -163,11 +163,8 @@ class Subscribtion_Industry {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Subscribtion_Industry_Public( $this->get_subscribtion_industry(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+		$plugin_public = Subscribtion_Industry_Public::get_instance( $this->get_subscribtion_industry(), $this->get_version() );
+		add_action('widgets_init', array($plugin_public, 'define_widget'));
 	}
 
 	/**

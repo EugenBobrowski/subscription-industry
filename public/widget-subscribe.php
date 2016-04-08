@@ -39,8 +39,10 @@ class SI_Subscribe_Widget extends WP_Widget {
 
         $this->si_widget_shortcodes = apply_filters('si_form_shortcodes',  array(
             'email' => array($this, 'shortcode_email'),
+            'name' => array($this, 'shortcode_name'),
             'submit'  => array($this, 'shortcode_submit'),
-            'button' => array($this, 'shortcode_button')
+            'button' => array($this, 'shortcode_button'),
+            'message' => array($this, 'shortcode_message'),
         ) );
     }
     /**
@@ -139,6 +141,14 @@ class SI_Subscribe_Widget extends WP_Widget {
 
         return '<input name="email" type="text"' . $attributes . '>';
     }
+    public function shortcode_name ($attr) {
+        $attributes = '';
+        foreach ($attr as $attribute=>$value) {
+            $attributes .= $attribute . '="' . $value . '" ';
+        }
+
+        return '<input name="name" type="text"' . $attributes . '>';
+    }
     public function shortcode_submit ($attr) {
         $attributes = '';
         foreach ($attr as $attribute=>$value) {
@@ -156,13 +166,30 @@ class SI_Subscribe_Widget extends WP_Widget {
         return '<button ' . $attributes . '>'. $content . '</button>';
     }
 
+    public function shortcode_message ($attr, $content) {
+        $attributes = '';
+        foreach ($attr as $attribute=>$value) {
+            $attributes .= $attribute . '="' . $value . '" ';
+        }
+
+        return '<button ' . $attributes . '>'. $content . '</button>';
+    }
+
 
     public function localize () {
         wp_localize_script('jquery', 'siFormAjax',
-            array(
+            apply_filters( 'si_form_localize', array(
                 'url' => admin_url('admin-ajax.php'),
-                'siSubscribeNonce' => wp_create_nonce('si-subscribe-nonce')
-            )
+                'siSubscribeNonce' => wp_create_nonce('si-subscribe-nonce'),
+                'messages' => array(
+                    'emptyMail' => __('Email is empty'),
+                    'success' => __('Subscribed successfully. You have successfully subscribed to the newsletter. You will receive a confirmation email in few minutes. Please follow the link in it to confirm your subscription. If the email takes more than 15 minutes to appear in your mailbox, please check your spam folder.'),
+                    'exists' => "Email already exist.",
+                    'unexpectedError' => "Oops.. Unexpected error occurred.",
+                    'invalidEmail' => 'Invalid email address.'
+                ),
+                'callmessage' => 'alert',
+            ))
         );
     }
 
@@ -171,10 +198,11 @@ class SI_Subscribe_Widget extends WP_Widget {
         <script id="si_widget" type="text/javascript">
             (function ($) {
                 var siSubscribeForms;
+                var siAlertFunction;
                 $(document).ready(function ($) {
                     siSubscribeForms = $('.si-widget-form');
-
-
+                    console.log(siFormAjax.callmessage);
+                    siAlertFunction = window[siFormAjax.callmessage];
 
 
                     var do_ajax = function (data) {
@@ -184,8 +212,7 @@ class SI_Subscribe_Widget extends WP_Widget {
                         var pattern_email = /^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$/i;
 
                         if (!$.trim(data.email).length || !pattern_email.test(data.email)) {
-                            console.log('invalid mail');
-                            siSubscribeForms.prepend('Email is not valid');
+                            siAlertFunction('Email is not valid');
                             return;
                         } else {
 
@@ -193,7 +220,13 @@ class SI_Subscribe_Widget extends WP_Widget {
 
 
                         $.post(siFormAjax.url, data, function (response) {
-                            console.log(response);
+                            response = JSON.parse(response);
+                            if (response.message != undefined && siFormAjax.messages[response.message] != undefined) {
+                                siAlertFunction(siFormAjax.messages[response.message]);
+                            } else {
+                                console.log(siFormAjax.messages, response);
+                            }
+
                         });
                     };
 
@@ -228,13 +261,39 @@ class SI_Subscribe_Widget extends WP_Widget {
         <?php
     }
 
+    /**
+     * Echo the json object.
+     *
+     */
     public function ajax_callback () {
         $nonce = $_POST['nonce'];
+
 
         if (!wp_verify_nonce($nonce, 'si-subscribe-nonce'))
             die ('Stop!');
 
-        var_dump($_POST);
+        if (!isset($_POST['email']))
+            wp_die( json_encode( array(
+                'message' => 'emptyMail', 'add_message'=>'Empty E-mail')));
+
+        $email = sanitize_email($_POST['email']);
+
+        if (empty($email)) wp_die( json_encode( array(
+            'message' => 'error', 'message'=>'Wrong E-mail')));
+
+        $name = (empty($_POST['name'])) ? '' : sanitize_text_field($_POST['name']);
+
+        $plugin_public = Subscribtion_Industry_Public::get_instance();
+
+        $insert = $plugin_public->insert_subscriber($email, $name);
+
+
+
+        echo json_encode(
+            array(
+                'message' => $insert,)
+        );
+
 
 
         wp_die();

@@ -15,10 +15,18 @@ The Subscribtion Industry plugin provide your subscribe form be ever so custom a
 
 Just insert the html code in textarea of widget using the SI Form shortcodes:
  
- * `[email]` E-mail input. Attributes:
+ * `[email]` E-mail input. Required. 
 	+ `type` type text
-	+ `error_class` validation class
- * `[submit]` 
- 
+	+ `class` 
+ * `[name]` Name of subscriber. Optional
+ * `[submit]` or `[button]`. Optional. But really recomended.
  
  You can add your own shortcode. Use `si_form_shortcodes` filter to add your callback function. 
+ 
+###Customizing messaging###
+ 
+1. Create the js function in your theme. 
+2. Use the `si_form_localize` filter to hook the alert function to return messages.
+
+ 
+ 

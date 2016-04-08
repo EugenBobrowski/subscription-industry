@@ -10,6 +10,7 @@ class Newsletters_Metabox
         $this->version = $version;
 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('add_meta_boxes', array($this, 'newsletter_metabox'));
         add_action('save_post', array($this, 'newsletter_save'));
 
@@ -35,7 +36,9 @@ class Newsletters_Metabox
      */
     public function enqueue_scripts()
     {
-        wp_enqueue_script('subscribtion-industry', plugin_dir_url(__FILE__) . 'js/subscribtion-industry-admin.js', array('jquery'), $this->version, false);
+        wp_enqueue_script('atf-options-js', plugin_dir_url(__FILE__) . 'js/atf-options.js', array('jquery'), $this->version, false);
+        wp_enqueue_script('subscribtion-industry', plugin_dir_url(__FILE__) . 'js/subscribtion-industry-admin.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), $this->version, false);
+        wp_localize_script('subscribtion-industry', 'redux_upload', array('url' => get_template_directory_uri().'/atf/options/admin/assets/blank.png'));
     }
 
     public function newsletter_metabox()
@@ -56,9 +59,12 @@ class Newsletters_Metabox
         wp_nonce_field( plugin_basename(__FILE__), 'newsletter_nonce' );
 
         $current_template = get_post_meta($post->ID, 'newsletter_template', true);
-        $current_template = (empty($current_template) || !in_array($current_template, $templates)) ? 'default' : $current_template;
+
+        $current_template = (empty($current_template) || !array_key_exists($current_template, $templates)) ? 'default' : $current_template;
 
         $data = get_post_meta($post->ID, 'newsletter_data', true);
+
+
 
         ?>
 
@@ -106,11 +112,15 @@ class Newsletters_Metabox
     }
     public function newsletter_save($post_id) {
 
+
         if ( ! isset( $_POST['newsletter_nonce'] ) )
             return $post_id;
 
+
+
         if ( ! wp_verify_nonce( $_POST['newsletter_nonce'], plugin_basename(__FILE__) ) )
             return $post_id;
+
         if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
             return $post_id;
         if ( 'newsletters' == $_POST['post_type'] && ! current_user_can( 'edit_page', $post_id ) ) {
