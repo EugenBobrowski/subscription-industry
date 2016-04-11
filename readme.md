@@ -21,7 +21,21 @@ Just insert the html code in textarea of widget using the SI Form shortcodes:
  * `[name]` Name of subscriber. Optional
  * `[submit]` or `[button]`. Optional. But really recomended.
  
- You can add your own shortcode. Use `si_form_shortcodes` filter to add your callback function. 
+ You can add your own shortcode. Use `si_form_shortcodes` filter to add your callback function.
+
+  ```php
+    function my_si_form_shortcode_callback($args, $contnent = ''){
+    if (empty($args[color])) $class = 'default'
+    return '<span class=' . $class . '>' . $content . '</span>';
+  }
+
+
+  function add_my_si_form_shortcode ($shrtcodes) {
+    $shorcodes[my_form_element] = 'my_si_form_shortcode_callback';
+    return $shortcodes;
+  }
+  add_filter('si_form_shortcodes', 'my_si_form_shortcode');
+  ```
  
 ###Customizing messaging###
  
