@@ -121,7 +121,7 @@ class Subscribtion_Industry_Public
         register_widget('SI_Subscribe_Widget');
     }
 
-    public function insert_subscriber($email, $name = '')
+    public function insert_subscriber($email, $name = '', $confirm = false)
     {
         global $wpdb;
 
@@ -135,8 +135,8 @@ class Subscribtion_Industry_Public
             return 'exists' . $confirm;
         }
 
-
-        $pass = wp_generate_password(24, true);
+        
+        $pass = ($confirm) ? wp_generate_password(24, true) : ''; 
 
         $insert = $wpdb->insert($wpdb->prefix . 'si_subscribers', array(
             'email' => $email,
@@ -148,6 +148,14 @@ class Subscribtion_Industry_Public
         } else {
             return $insert;
         }
+
+    }    
+    
+    public function update_subscriber($data, $where)
+    {
+        global $wpdb;
+        
+        return $wpdb->update($wpdb->prefix . 'si_subscribers', $data, $where);
 
     }
 

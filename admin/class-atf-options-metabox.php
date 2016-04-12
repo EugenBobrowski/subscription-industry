@@ -36,7 +36,7 @@ class Newsletters_Metabox
      */
     public function enqueue_scripts()
     {
-        wp_enqueue_script('atf-options-js', plugin_dir_url(__FILE__) . 'js/atf-options.js', array('jquery'), $this->version, false);
+        wp_enqueue_script('atf-options-js', plugin_dir_url(__FILE__) . 'js/atf-options.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), $this->version, false);
         wp_enqueue_script('subscribtion-industry', plugin_dir_url(__FILE__) . 'js/subscribtion-industry-admin.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), $this->version, false);
         wp_localize_script('subscribtion-industry', 'redux_upload', array('url' => get_template_directory_uri().'/atf/options/admin/assets/blank.png'));
     }

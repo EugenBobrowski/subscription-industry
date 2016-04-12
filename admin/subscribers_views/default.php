@@ -31,7 +31,7 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
 
 <div class="wrap">
 
-    <h2><?php echo esc_html(get_admin_page_title()); ?><a href="#" class="page-title-action">Add New</a></h2>
+    <h2><?php echo esc_html(get_admin_page_title()); ?><a href="<?php echo add_query_arg(array('action' => 'edit')); ?>" class="page-title-action">Add New</a></h2>
 
     <form method="get">
 
@@ -77,7 +77,10 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                     <td class="username column-username has-row-actions column-primary" data-colname="Email">
                         <?php echo get_avatar($subscriber->email, 32); ?>
                         <strong>
-                            <a href="http://si-subscribtion.loc/wp-admin/user-edit.php?subscriber_id=2&amp;wp_http_referer=%2Fwp-admin%2Fusers.php">
+                            <a href="<?php echo htmlspecialchars(add_query_arg(array(
+                                'subscriber' => $subscriber->id,
+                                'action' => 'edit',
+                            ))); ?>">
                                 <?php echo (empty($subscriber->name)) ? $subscriber->email : $subscriber->name; ?></a>
                         </strong><br>
 
