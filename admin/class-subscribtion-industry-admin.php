@@ -59,6 +59,7 @@ class Subscribtion_Industry_Admin
         add_action('load-post-new.php', array($this, 'load_metabox'));
 
         add_action('admin_menu', array($this, 'subscribers_page'));
+        add_action('admin_menu', array($this, 'options_page'));
     }
 
     public function load_metabox()
@@ -129,14 +130,18 @@ class Subscribtion_Industry_Admin
                     ),
                 ),
             ),
-            'default_example' => array(
-                'name' => 'Default HTML',
-                'describtion' => 'The default text template',
+            'system' => array(
+                'name' => 'System Template',
+                'describtion' => 'System template',
                 'preview' => plugin_dir_url(__FILE__) . 'img/email_campaigns_en.png',
                 'fields' => array(
-                    'content' => array(
-                        'type' => 'textarea',
-                        'title' => 'Content',
+                    'type' => array(
+                        'type' => 'select',
+                        'title' => 'Letter Type',
+                        'options' => array(
+                            'text' => 'Text',
+                            'html' => 'HTML',
+                        ),
                     ),
                     'editor' => array(
                         'type' => 'editor',
@@ -164,6 +169,71 @@ class Subscribtion_Industry_Admin
             'manage_options',
             'subscribers',
             array($this, $this->subscribers_views_controller()));
+
+
+    }
+
+    public function options_page()
+    {
+        $hook_suffix = add_options_page(
+            'Subscribtion Industry Options',
+            'Si Options',
+            'manage_options',
+            'si-options',
+            array($this, 'options_page_callback')
+        );
+        global $plugin_page;
+
+        if (strpos($hook_suffix, $plugin_page))
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_atfHtmlHelper_assets'));
+    }
+
+    public function options_page_callback()
+    {
+        include_once 'htmlhelper.php';
+
+        ?>
+        <div class="wrap atf-fields">
+
+        <h2><?php echo esc_html(get_admin_page_title()); ?></h2>
+
+        <form method="get">
+
+                <table class="form-table">
+                    <tr class="form-required">
+                        <th scope="row"><label for="name"><?php _e('Subscribtion Page'); ?></label></th>
+                        <td><?php wp_dropdown_pages( array( 'name' => 'page_on_front',
+
+                                'show_option_none' => __( '&mdash; Select &mdash;' ), 'option_none_value' => '0', 'selected' => get_option( 'page_on_front' ) ) ); ?></td>
+                    </tr>
+                    <tr class="form-required">
+                        <th scope="row"><label for="email">Email <span class="description">(required)</span></label></th>
+                        <td>
+                            <?php AtfHtmlHelper::text(array('id' => 'email', 'name' => 'email',) ); ?>
+                            <p class="description">Email to send messages</p>
+                        </td>
+                    </tr>
+                    <tr class="form-field form-required">
+                        <th scope="row"><label>Confirmation text</label></th>
+                        <td><?php AtfHtmlHelper::textarea(array('id' => 'confirm', 'name' => 'confirm', 'value' => (empty($data['activation_key']) && isset($data['activation_key'])))); ?></td>
+                    </tr>
+                    <tr class="form-field form-required">
+                        <th scope="row"><label>Confirmation text</label></th>
+                        <td><?php AtfHtmlHelper::select(array('id' => 'confirm', 'name' => 'confirm', 'value' => 'text', 'options' => array('text' => 'Text', 'html' => 'HTML'))); ?></td>
+                    </tr>
+                </table>
+
+                <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary"
+                                         value="Submit"></p>
+
+        </form>
+        </div>
+        <?php
+    }
+
+    public function getSubscribtionIndustry()
+    {
+        return $this->subscribtion_industry;
     }
 
     public function subscribers_views_controller()
@@ -177,6 +247,9 @@ class Subscribtion_Industry_Admin
             case 'delete':
                 if (isset($_POST['confirm_delete']) && 'dodelete' == $_POST['confirm_delete']) {
                     $this->do_delete();
+                    wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
+                    exit;
+                } elseif (!isset($_GET['subscribers']) || isset($_GET['subscriber'])) {
                     wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
                     exit;
                 } else {
@@ -225,7 +298,7 @@ class Subscribtion_Industry_Admin
 
     public function do_edit()
     {
-        
+
         //ToDO: use confirmation by nonce 
         $name = sanitize_text_field($_POST['name']);
         $email = sanitize_email($_POST['email']);
@@ -247,8 +320,8 @@ class Subscribtion_Industry_Admin
             } elseif (!empty($_POST['confirm'])) {
                 $data['activation_key'] = '';
             }
-            
-            
+
+
             $plugin_public->update_subscriber($data, $where);
         }
 
@@ -335,7 +408,8 @@ class Subscribtion_Industry_Admin
         <form method="post">
             <input type="hidden" name="action" value="doedit"/>
             <input type="hidden" name="id" value="<?php echo $data['id']; ?>"/>
-            <input type="hidden" name="was_confirmed" value="<?php if (empty($data['activation_key']) && isset($data['activation_key'])) echo 1; ?>"/>
+            <input type="hidden" name="was_confirmed"
+                   value="<?php if (empty($data['activation_key']) && isset($data['activation_key'])) echo 1; ?>"/>
             <table class="form-table">
                 <tr class="form-required">
                     <th scope="row"><label for="name"><?php _e('Name'); ?></label></th>

@@ -121,7 +121,7 @@ class Subscribtion_Industry_Public
         register_widget('SI_Subscribe_Widget');
     }
 
-    public function insert_subscriber($email, $name = '', $confirm = false)
+    public function insert_subscriber($email, $name = '', $confirm = true)
     {
         global $wpdb;
 
