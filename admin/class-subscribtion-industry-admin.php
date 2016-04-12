@@ -202,7 +202,6 @@ class Subscribtion_Industry_Admin
 
     public function enqueue_atfHtmlHelper_assets()
     {
-        echo 'asldkjsdfkjg';
         wp_enqueue_style('atf-options-si', plugin_dir_url(__FILE__) . 'css/options.css', array(), '1.1', 'all');
         wp_enqueue_script('atf-options-js', plugin_dir_url(__FILE__) . 'js/atf-options.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), $this->version, false);
         wp_localize_script('atf-options-js', 'redux_upload', array('url' => get_template_directory_uri() . '/atf/options/admin/assets/blank.png'));
@@ -273,7 +272,6 @@ class Subscribtion_Industry_Admin
 
         ?>
         <div class="wrap">
-
 
         <h2><?php _e('Delete subscriber', 'si'); ?></h2>
         <form method="post">
@@ -352,12 +350,6 @@ class Subscribtion_Industry_Admin
                     <td><?php AtfHtmlHelper::tumbler(array('id' => 'confirm', 'name' => 'confirm', 'value' => (empty($data['activation_key']) && isset($data['activation_key'])))); ?></td>
                 </tr>
             </table>
-
-
-            <p>
-                You have specified this subscriber for deletion:
-            </p>
-
 
             <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary"
                                      value="Submit"></p>
