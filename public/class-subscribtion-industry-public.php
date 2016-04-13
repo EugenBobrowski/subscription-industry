@@ -161,9 +161,11 @@ class Subscribtion_Industry_Public
 
     public function send_confirmation_letter($email, $name, $pass)
     {
+        $options = get_option('si_options');
+        
         $subject = 'Confirm you letter';
         $name = (empty($name)) ? 'Subscriber' : $name;
-        $message = 'Dear ' . $name . '\r\n';
+        $message = 'Dear ' . $name . '\n';
         $message .= 'Your e-mail address was subscribed to our site. To confirm please go this link ' . home_url('confirm_subscribtion=' . $email . '&confirm_key=' . $pass)  .  '\r\n';
         mail($email, $subject, $message);
     }

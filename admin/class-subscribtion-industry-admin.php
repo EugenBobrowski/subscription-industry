@@ -184,42 +184,104 @@ class Subscribtion_Industry_Admin
         );
         global $plugin_page;
 
-        if (strpos($hook_suffix, $plugin_page))
+        if (strpos($hook_suffix, $plugin_page)) {
             add_action('admin_enqueue_scripts', array($this, 'enqueue_atfHtmlHelper_assets'));
+            $this->save_options();
+        }
+
+    }
+
+    public function save_options()
+    {
+
+        if (isset($_POST['si_options'])) {
+            $to_save = array();
+            foreach ($_POST['si_options'] as $option => $value) {
+                switch ($option) {
+                    case 'confirm_page':
+                        $to_save['confirm_page'] = intval($value);
+                        break;
+                    case 'email':
+                        $value = sanitize_email($value);
+                        if (empty($value)) {
+                            $sitename = strtolower( $_SERVER['SERVER_NAME'] );
+                            if ( substr( $sitename, 0, 4 ) == 'www.' ) {
+                                $sitename = substr( $sitename, 4 );
+                            }
+                            $to_save['email'] = 'no-reply@' . $sitename;
+                        } else {
+                            $to_save['email'] = $value;
+                        }
+
+                        break;
+                    case 'confirm_request_content':
+
+                        $to_save['confirm_request_content'] = wp_kses_post($value);
+                        break;
+                    case 'confirm_letter_type':
+                        $to_save['confirm_letter_type'] = sanitize_text_field($value);
+                        break;
+                }
+            }
+            update_option('si_options', $to_save);
+        }
     }
 
     public function options_page_callback()
     {
         include_once 'htmlhelper.php';
+        $options = wp_parse_args(get_option('si_options'), array(
+            'confirm_page' => 0,
+            'email' => '',
+            'confirm_request_content' => 'Dear [subscriber]' . PHP_EOL .
+                PHP_EOL .
+                'Your e-mail address was subscribed to our site.' . PHP_EOL .
+                'To confirm please go this link [confirm]confirm[/confirm]',
+            'confirm_letter_type' => 'text',
+        ));
 
         ?>
         <div class="wrap atf-fields">
 
         <h2><?php echo esc_html(get_admin_page_title()); ?></h2>
 
-        <form method="get">
+        <form method="post">
 
                 <table class="form-table">
                     <tr class="form-required">
                         <th scope="row"><label for="name"><?php _e('Subscribtion Page'); ?></label></th>
-                        <td><?php wp_dropdown_pages( array( 'name' => 'page_on_front',
-
-                                'show_option_none' => __( '&mdash; Select &mdash;' ), 'option_none_value' => '0', 'selected' => get_option( 'page_on_front' ) ) ); ?></td>
+                        <td><?php wp_dropdown_pages( array(
+                                'name' => 'si_options[confirm_page]',
+                                'show_option_none' => __( '&mdash; Select &mdash;' ),
+                                'option_none_value' => '0',
+                                'selected' => $options['confirm_page'] ) ); ?>
+                        <p class="description"><?php _e('This is service page to show notifications about email confirmation or unsubnscribtion', 'si'); ?></p>
+                        </td>
                     </tr>
                     <tr class="form-required">
                         <th scope="row"><label for="email">Email <span class="description">(required)</span></label></th>
                         <td>
-                            <?php AtfHtmlHelper::text(array('id' => 'email', 'name' => 'email',) ); ?>
+                            <?php AtfHtmlHelper::text(array(
+                                'id' => 'email',
+                                'name' => 'si_options[email]',
+                                'value' => $options['email']) ); ?>
                             <p class="description">Email to send messages</p>
                         </td>
                     </tr>
                     <tr class="form-field form-required">
                         <th scope="row"><label>Confirmation text</label></th>
-                        <td><?php AtfHtmlHelper::textarea(array('id' => 'confirm', 'name' => 'confirm', 'value' => (empty($data['activation_key']) && isset($data['activation_key'])))); ?></td>
+                        <td><?php AtfHtmlHelper::textarea(array(
+                                'id' => 'confirm',
+                                'name' => 'si_options[confirm_request_content]',
+                                'value' => $options['confirm_request_content'])); ?></td>
                     </tr>
                     <tr class="form-field form-required">
                         <th scope="row"><label>Confirmation text</label></th>
-                        <td><?php AtfHtmlHelper::select(array('id' => 'confirm', 'name' => 'confirm', 'value' => 'text', 'options' => array('text' => 'Text', 'html' => 'HTML'))); ?></td>
+                        <td><?php AtfHtmlHelper::select(array(
+                                'id' => 'confirm',
+                                'name' => 'si_options[confirm_letter_type]',
+                                'value' => $options['confirm_letter_type'],
+                                'options' => array('text' => 'Text', 'html' => 'HTML'))); ?></td>
                     </tr>
                 </table>
 
