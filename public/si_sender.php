@@ -44,7 +44,8 @@ class si_sender
             $this->subscriber = $subscriber;
             $subject = 'Confirm you letter';
             $name = (empty($name)) ? 'Subscriber' : $name;
-            $message = $this->letter_shortcodes_personal($this->code);
+//            $message = $this->letter_shortcodes_personal($this->code);
+            $message = $this->code;
 
             mail($subscriber['email'], $subject, $message, $this->headers);
         }
