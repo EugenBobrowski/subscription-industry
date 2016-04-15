@@ -220,6 +220,7 @@ class SI_Subscribe_Widget extends WP_Widget {
 
 
                         $.post(siFormAjax.url, data, function (response) {
+                            console.log(response);
                             response = JSON.parse(response);
                             if (response.message != undefined && siFormAjax.messages[response.message] != undefined) {
                                 siAlertFunction(siFormAjax.messages[response.message]);

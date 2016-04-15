@@ -69,10 +69,12 @@ class si_sender
             } else {
                 $this->headers['To'] = $subscriber['name'] . '<' . $subscriber['email'] . '>';
             }
-            
+
             $name = (empty($name)) ? 'Subscriber' : $name;
             $message = $this->letter_shortcodes_personal($this->code);
-
+            var_dump($subscriber['email']);
+            var_dump(implode("\r\n", $this->headers));
+            var_dump($message);
             mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
         }
     }
