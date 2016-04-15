@@ -162,12 +162,19 @@ class Subscribtion_Industry_Public
     public function send_confirmation_letter($email, $name, $pass)
     {
         $options = get_option('si_options');
+
+        include_once 'si_sender.php';
         
-        $subject = 'Confirm you letter';
-        $name = (empty($name)) ? 'Subscriber' : $name;
-        $message = 'Dear ' . $name . '\n';
-        $message .= 'Your e-mail address was subscribed to our site. To confirm please go this link ' . home_url('confirm_subscribtion=' . $email . '&confirm_key=' . $pass)  .  '\r\n';
-        mail($email, $subject, $message);
+        $sender = si_sender::get_instance();
+        
+        $sender->subscribers = array(
+            array('email' => $email, 'name' => $name, 'pass' => $pass)
+        );
+        
+        $sender->code = $options['confirm_request_content'];
+        
+        $sender->send();
+        
     }
 
     public function confirm_key()
