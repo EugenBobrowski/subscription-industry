@@ -37,7 +37,8 @@ class si_sender
     }
 
     public function send() {
-        $this->code = $this->letter_shortcodes($this->code);
+        
+//        $this->code = $this->letter_shortcodes($this->code);
 
         foreach ($this->subscribers as $subscriber) {
             $this->subscriber = $subscriber;
