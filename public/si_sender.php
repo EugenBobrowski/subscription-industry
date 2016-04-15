@@ -123,9 +123,9 @@ class si_sender
         return $this->subscriber['name'];
     }
     public function shortcode_confirm ($attr, $content) {
-        $confirm_link = add_query_arg(array(
+        $confirm_link = htmlspecialchars(add_query_arg(array(
             'pass' => $this->subscriber['pass'],
-        ), get_permalink($this->options['confirm_page']));
+        ), get_permalink($this->options['confirm_page'])));
 
         if ('plain' == $this->mail_type) return $confirm_link;
         elseif (null == $content) return '<a http="'. $confirm_link. '" >confirm</a>';
