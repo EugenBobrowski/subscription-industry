@@ -48,6 +48,7 @@ class si_sender
 
         $this->headers['MIME-Version'] = "MIME-Version: 1.0";
         $this->headers['Content-type'] = "Content-type: text/{$this->options['confirm_letter_type']}; charset={$this->charset}";
+        $this->headers['To'] = "";
         $this->headers['From'] = "From: {$this->options['email']}";
         $this->headers['Reply-To'] = "Reply-To: {$this->options['email']}";
         $this->headers['X-Mailer'] = "X-Mailer: PHP/" . phpversion();
@@ -63,6 +64,11 @@ class si_sender
 
         foreach ($this->subscribers as $subscriber) {
             $this->subscriber = $subscriber;
+            if (empty($subscriber['name'])) {
+                $this->headers['To'] = $subscriber['email'];
+            } else {
+                $this->headers['To'] = $subscriber['name'] . '<' . $subscriber['email'] . '>';
+            }
             
             $name = (empty($name)) ? 'Subscriber' : $name;
             $message = $this->letter_shortcodes_personal($this->code);
