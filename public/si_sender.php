@@ -14,7 +14,7 @@ class si_sender
     public $letter_shortcodes_personal;
     public $subscribers;
     public $subscriber;
-    public $headers = array('');
+    public $headers = array();
     public $code;
     public $subject;
     public $options;
@@ -74,7 +74,6 @@ class si_sender
             $message = $this->letter_shortcodes_personal($this->code);
 
             mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
-            mail('ecologistkai@gmail.com', 'var_dump', var_export($subscriber['email']) .  var_dump($this->headers));
         }
     }
 
