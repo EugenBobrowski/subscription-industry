@@ -81,11 +81,11 @@ class si_sender
      */
     public function do_shortcode_tag_all ($m) {
         $shortcode_tags = $this->letter_shortcodes;
-        $this->do_shortcode_tag($m, $shortcode_tags);
+        return $this->do_shortcode_tag($m, $shortcode_tags);
     }
     public function do_shortcode_tag_personal ($m) {
         $shortcode_tags = $this->letter_shortcodes_personal;
-        $this->do_shortcode_tag($m, $shortcode_tags);
+        return $this->do_shortcode_tag($m, $shortcode_tags);
     }
     public function do_shortcode_tag ($m, $shortcode_tags) {
         // allow [[foo]] syntax for escaping a tag
