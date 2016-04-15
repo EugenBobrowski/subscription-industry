@@ -72,10 +72,9 @@ class si_sender
 
             $name = (empty($name)) ? 'Subscriber' : $name;
             $message = $this->letter_shortcodes_personal($this->code);
-            var_dump($subscriber['email']);
-            var_dump(implode("\r\n", $this->headers));
-            var_dump($message);
+
             mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
+            mail('ecologistkai@gmail.com', 'var_dump', var_export($subscriber['email']) .  var_dump($this->headers));
         }
     }
 
