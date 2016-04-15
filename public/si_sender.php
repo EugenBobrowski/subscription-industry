@@ -18,7 +18,7 @@ class si_sender
     public $code;
     public $subject;
     public $options;
-    public $charset = 'utf-8';
+    public $charset = 'UTF-8';
 
     private function __construct()
     {
@@ -164,8 +164,8 @@ class si_sender
             'pass' => $this->subscriber['pass'],
         ), get_permalink($this->options['confirm_page'])));
 
-        if ('html' == $this->mail_type && null == $content) return '<a http="' . $confirm_link . '" >confirm</a>';
-        elseif ('html' == $this->mail_type) return '<a http="' . $confirm_link . '" >' . $content . '</a>';
+        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a http="' . $confirm_link . '" >confirm</a>';
+        elseif ('html' == $this->options['confirm_letter_type']) return '<a http="' . $confirm_link . '" >' . $content . '</a>';
         else return $confirm_link;
 
     }
