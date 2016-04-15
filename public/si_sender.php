@@ -16,7 +16,9 @@ class si_sender
     public $subscriber;
     public $headers = array('');
     public $code;
-    public $mail_type;
+    public $options;
+    public $mail_type = 'plain';
+    public $charset = 'utf-8';
     
     private function __construct()
     {
@@ -26,6 +28,8 @@ class si_sender
         ) );
         $this->letter_shortcodes = apply_filters('si_letter_shortcodes',  array() );
 
+        $this->options = get_option('si_options');
+        
         $sitename = strtolower( $_SERVER['SERVER_NAME'] );
         if ( substr( $sitename, 0, 4 ) == 'www.' ) {
             $sitename = substr( $sitename, 4 );
@@ -100,6 +104,7 @@ class si_sender
             /* translators: %s: shortcode tag */
             $message = sprintf( __( 'Attempting to parse a shortcode without a valid callback: %s' ), $tag );
             _doing_it_wrong( __FUNCTION__, $message, '4.3.0' );
+
             return $m[0];
         }
 
@@ -118,7 +123,14 @@ class si_sender
         return $this->subscriber['name'];
     }
     public function shortcode_confirm ($attr, $content) {
-        return 'abracadabra';
+        $confirm_link = add_query_arg(array(
+            'pass' => $this->subscriber['pass'],
+        ), get_permalink($this->options['confirm_page']));
+
+        if ('plain' == $this->mail_type) return $confirm_link;
+        elseif (null == $content) return '<a http="'. $confirm_link. '" >confirm</a>';
+        else return '<a http="'. $confirm_link. '" >' . $content . '</a>';
+        
     }
 
     public static function get_instance()
