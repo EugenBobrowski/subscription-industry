@@ -38,14 +38,13 @@ class si_sender
 
     public function send() {
         
-//        $this->code = $this->letter_shortcodes($this->code);
+        $this->code = $this->letter_shortcodes($this->code);
 
         foreach ($this->subscribers as $subscriber) {
             $this->subscriber = $subscriber;
             $subject = 'Confirm you letter';
             $name = (empty($name)) ? 'Subscriber' : $name;
-//            $message = $this->letter_shortcodes_personal($this->code);
-            $message = $this->code;
+            $message = $this->letter_shortcodes_personal($this->code);
 
             mail($subscriber['email'], $subject, $message, $this->headers);
         }
