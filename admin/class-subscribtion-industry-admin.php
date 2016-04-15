@@ -311,7 +311,7 @@ class Subscribtion_Industry_Admin
                     $this->do_delete();
                     wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
                     exit;
-                } elseif (!isset($_GET['subscribers']) || isset($_GET['subscriber'])) {
+                } elseif (!isset($_GET['subscribers']) && !isset($_GET['subscriber'])) {
                     wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
                     exit;
                 } else {
