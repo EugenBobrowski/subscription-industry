@@ -135,8 +135,8 @@ class Subscribtion_Industry_Public
             return 'exists' . $confirm;
         }
 
-        
-        $pass = ($confirm) ? wp_generate_password(24, true) : ''; 
+
+        $pass = ($confirm) ? wp_generate_password(24, true) : '';
 
         $insert = $wpdb->insert($wpdb->prefix . 'si_subscribers', array(
             'email' => $email,
@@ -149,12 +149,12 @@ class Subscribtion_Industry_Public
             return $insert;
         }
 
-    }    
-    
+    }
+
     public function update_subscriber($data, $where)
     {
         global $wpdb;
-        
+
         return $wpdb->update($wpdb->prefix . 'si_subscribers', $data, $where);
 
     }
@@ -164,17 +164,20 @@ class Subscribtion_Industry_Public
         $options = get_option('si_options');
 
         include_once 'si_sender.php';
-        
+
         $sender = si_sender::get_instance();
-        
+
         $sender->subscribers = array(
             array('email' => $email, 'name' => $name, 'pass' => $pass)
         );
-        
-        $sender->code = $options['confirm_request_content'];
-        
+
+        $sender->subject = 'Confirm you letter';
+
+        if ('html' == $options['confirm_letter_type']) $sender->code = $sender->get_simple_html($sender->subject, wpautop($options['confirm_request_content']));
+        else $sender->code = $options['confirm_request_content'];
+
         $sender->send();
-        
+
     }
 
     public function confirm_key()

@@ -237,7 +237,7 @@ class Subscribtion_Industry_Admin
                 PHP_EOL .
                 'Your e-mail address was subscribed to our site.' . PHP_EOL .
                 'To confirm please go this link [confirm]confirm[/confirm]',
-            'confirm_letter_type' => 'text',
+            'confirm_letter_type' => 'plain',
         ));
 
         ?>
@@ -281,7 +281,7 @@ class Subscribtion_Industry_Admin
                                 'id' => 'confirm',
                                 'name' => 'si_options[confirm_letter_type]',
                                 'value' => $options['confirm_letter_type'],
-                                'options' => array('text' => 'Text', 'html' => 'HTML'))); ?></td>
+                                'options' => array('plain' => 'Text', 'html' => 'HTML'))); ?></td>
                     </tr>
                 </table>
 
