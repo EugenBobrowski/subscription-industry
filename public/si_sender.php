@@ -67,7 +67,7 @@ class si_sender
             if (empty($subscriber['name'])) {
                 $this->headers['To'] = $subscriber['email'];
             } else {
-                $this->headers['To'] = $subscriber['name'] . '<' . $subscriber['email'] . '>';
+                $this->headers['To'] = $subscriber['name'] . ' <' . $subscriber['email'] . '>';
             }
 
             $name = (empty($name)) ? 'Subscriber' : $name;
