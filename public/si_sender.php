@@ -162,8 +162,8 @@ class si_sender
             'pass' => $this->subscriber['pass'],
         ), get_permalink($this->options['confirm_page'])));
 
-        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a http="' . $confirm_link . '" title="confirm">confirm</a>';
-        elseif ('html' == $this->options['confirm_letter_type']) return '<a http="' . $confirm_link . '" title="confirm">' . $content . '</a>';
+        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
+        elseif ('html' == $this->options['confirm_letter_type']) return '<a href="' . $confirm_link . '" title="confirm">' . $content . '</a>';
         else return $confirm_link;
 
     }
