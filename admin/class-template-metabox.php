@@ -56,7 +56,7 @@ class Newsletters_Metabox
             $templates_opts[$id] = '<img src="' . $tmpl['preview'] . '" width="150" height="300"/><br />' . $tmpl['name'];
         }
 
-        wp_nonce_field( plugin_basename(__FILE__), 'newsletter_nonce' );
+        wp_nonce_field( plugin_basename(__FILE__), 'newsletter_template_nonce' );
 
         $current_template = get_post_meta($post->ID, 'newsletter_template', true);
 
@@ -113,12 +113,10 @@ class Newsletters_Metabox
     public function newsletter_save($post_id) {
 
 
-        if ( ! isset( $_POST['newsletter_nonce'] ) )
+        if ( ! isset( $_POST['newsletter_template_nonce'] ) )
             return $post_id;
-
-
-
-        if ( ! wp_verify_nonce( $_POST['newsletter_nonce'], plugin_basename(__FILE__) ) )
+//
+        if ( ! wp_verify_nonce( $_POST['newsletter_template_nonce'], plugin_basename(__FILE__) ) )
             return $post_id;
 
         if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
@@ -135,6 +133,7 @@ class Newsletters_Metabox
          *
          */
         $template = $_POST['template'];
+
 
         $templates = apply_filters('si_templates', array());
 

@@ -56,6 +56,7 @@ class Subscribtion_Industry_Admin
 
 
         add_action('load-post.php', array($this, 'load_metabox'));
+        add_action('load-post.php', array($this, 'load_metabox_send'));
         add_action('load-post-new.php', array($this, 'load_metabox'));
 
         add_action('admin_menu', array($this, 'subscribers_page'));
@@ -64,8 +65,14 @@ class Subscribtion_Industry_Admin
 
     public function load_metabox()
     {
-        include_once 'class-atf-options-metabox.php';
+        include_once 'class-template-metabox.php';
         Newsletters_Metabox::get_instance($this->version);
+    }
+
+    public function load_metabox_send()
+    {
+        include_once 'class-send-metabox.php';
+        Sender_Metabox::get_instance($this->version);
     }
 
     public function newsletters()
@@ -111,6 +118,7 @@ class Subscribtion_Industry_Admin
             'default' => array(
                 'name' => 'Default text',
                 'describtion' => 'The default text template',
+                'type' => 'plain',
                 'preview' => plugin_dir_url(__FILE__) . 'img/email_template_txt.png',
                 'fields' => array(
                     'content' => array(
@@ -118,10 +126,12 @@ class Subscribtion_Industry_Admin
                         'title' => 'Content',
                     ),
                 ),
+                'body' => '{content}'
             ),
             'default_html' => array(
                 'name' => 'Default HTML',
                 'describtion' => 'The default text template',
+                'type' => 'html',
                 'preview' => plugin_dir_url(__FILE__) . 'img/email_template_html.png',
                 'fields' => array(
                     'content' => array(
@@ -129,6 +139,17 @@ class Subscribtion_Industry_Admin
                         'title' => 'Content',
                     ),
                 ),
+                'body' => '<table>
+<tr>
+    <td></td>
+    <td width="600">
+    {content}
+</td>
+    <td></td>
+                
+</tr>
+</table>',
+                
             ),
             'system' => array(
                 'name' => 'System Template',
@@ -204,9 +225,9 @@ class Subscribtion_Industry_Admin
                     case 'email':
                         $value = sanitize_email($value);
                         if (empty($value)) {
-                            $sitename = strtolower( $_SERVER['SERVER_NAME'] );
-                            if ( substr( $sitename, 0, 4 ) == 'www.' ) {
-                                $sitename = substr( $sitename, 4 );
+                            $sitename = strtolower($_SERVER['SERVER_NAME']);
+                            if (substr($sitename, 0, 4) == 'www.') {
+                                $sitename = substr($sitename, 4);
                             }
                             $to_save['email'] = 'no-reply@' . $sitename;
                         } else {
@@ -243,28 +264,29 @@ class Subscribtion_Industry_Admin
         ?>
         <div class="wrap atf-fields">
 
-        <h2><?php echo esc_html(get_admin_page_title()); ?></h2>
+            <h2><?php echo esc_html(get_admin_page_title()); ?></h2>
 
-        <form method="post">
+            <form method="post">
 
                 <table class="form-table">
                     <tr class="form-required">
                         <th scope="row"><label for="name"><?php _e('Subscribtion Page'); ?></label></th>
-                        <td><?php wp_dropdown_pages( array(
+                        <td><?php wp_dropdown_pages(array(
                                 'name' => 'si_options[confirm_page]',
-                                'show_option_none' => __( '&mdash; Select &mdash;' ),
+                                'show_option_none' => __('&mdash; Select &mdash;'),
                                 'option_none_value' => '0',
-                                'selected' => $options['confirm_page'] ) ); ?>
-                        <p class="description"><?php _e('This is service page to show notifications about email confirmation or unsubnscribtion', 'si'); ?></p>
+                                'selected' => $options['confirm_page'])); ?>
+                            <p class="description"><?php _e('This is service page to show notifications about email confirmation or unsubnscribtion', 'si'); ?></p>
                         </td>
                     </tr>
                     <tr class="form-required">
-                        <th scope="row"><label for="email">Email <span class="description">(required)</span></label></th>
+                        <th scope="row"><label for="email">Email <span class="description">(required)</span></label>
+                        </th>
                         <td>
                             <?php AtfHtmlHelper::text(array(
                                 'id' => 'email',
                                 'name' => 'si_options[email]',
-                                'value' => $options['email']) ); ?>
+                                'value' => $options['email'])); ?>
                             <p class="description">Email to send messages</p>
                         </td>
                     </tr>
@@ -288,7 +310,7 @@ class Subscribtion_Industry_Admin
                 <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary"
                                          value="Submit"></p>
 
-        </form>
+            </form>
         </div>
         <?php
     }
@@ -345,6 +367,8 @@ class Subscribtion_Industry_Admin
     public function do_delete()
     {
         //ToDO: use confirmation by nonce 
+        //ToDo: Use Subscribers_Model class
+
         if (isset($_POST['subscribers']) && is_array($_POST)) {
             $subscribers = array_map('intval', $_POST['subscribers']);
 
@@ -377,10 +401,10 @@ class Subscribtion_Industry_Admin
             $where = array(
                 'id' => intval($_POST['id']),
             );
-            if (!$_POST['confirm'] && $_POST['was_confirmed']) {
-                $data['activation_key'] = wp_generate_password(24, true);
+            if (!$_POST['confirm']) {
+                $data['status'] = 0;
             } elseif (!empty($_POST['confirm'])) {
-                $data['activation_key'] = '';
+                $data['status'] = 1;
             }
 
 
@@ -400,37 +424,13 @@ class Subscribtion_Industry_Admin
         else $subscribers = array();
 
 
+        //ToDo: Use Subscribers_Model class
         global $wpdb;
-
         $select = 'SELECT * FROM ' . $wpdb->prefix . 'si_subscribers WHERE id IN (' . implode(',', $subscribers) . ');';
         $subscribers = $wpdb->get_results($select);
 
-        ?>
-        <div class="wrap">
+        include 'subscribers_views/confirm_deletion.php';
 
-        <h2><?php _e('Delete subscriber', 'si'); ?></h2>
-        <form method="post">
-            <input type="hidden" name="confirm_delete" value="dodelete"/>
-            <p>
-                You have specified this subscriber for deletion:
-            </p>
-            <ul>
-                <?php foreach ($subscribers as $subscriber) {
-                    ?>
-                    <li>
-                        <input type="hidden" name="subscribers[]"
-                               value="<?php echo $subscriber->id; ?>"><?php echo 'ID #' . $subscriber->id . ': ' . $subscriber->email . ' [' . $subscriber->name . ']'; ?>
-                    </li>
-                    <?php
-                } ?>
-
-            </ul>
-
-            <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary"
-                                     value="Confirm Deletion"></p>
-        </form>
-
-        <?php
         return true;
     }
 
@@ -470,8 +470,6 @@ class Subscribtion_Industry_Admin
         <form method="post">
             <input type="hidden" name="action" value="doedit"/>
             <input type="hidden" name="id" value="<?php echo $data['id']; ?>"/>
-            <input type="hidden" name="was_confirmed"
-                   value="<?php if (empty($data['activation_key']) && isset($data['activation_key'])) echo 1; ?>"/>
             <table class="form-table">
                 <tr class="form-required">
                     <th scope="row"><label for="name"><?php _e('Name'); ?></label></th>
@@ -483,7 +481,7 @@ class Subscribtion_Industry_Admin
                 </tr>
                 <tr class="form-field form-required">
                     <th scope="row"><label>Confirm</label></th>
-                    <td><?php AtfHtmlHelper::tumbler(array('id' => 'confirm', 'name' => 'confirm', 'value' => (empty($data['activation_key']) && isset($data['activation_key'])))); ?></td>
+                    <td><?php AtfHtmlHelper::tumbler(array('id' => 'confirm', 'name' => 'confirm', 'value' => $data['status'])); ?></td>
                 </tr>
             </table>
 
@@ -501,15 +499,14 @@ class Subscribtion_Industry_Admin
         if (isset($_GET['orderby']) && in_array($_GET['orderby'], array('name', 'email', 'status', 'last_send'))) $orderby = $_GET['orderby'];
         else $orderby = 'id';
 
-        if ($orderby == 'status') $orderby_sql = 'activation_key';
-        else $orderby_sql = $orderby;
-
         if (isset($_GET['order'])) $order = $_GET['order'];
         else $order = 'asc';
 
-        global $wpdb;
-        $select = 'SELECT * FROM ' . $wpdb->prefix . 'si_subscribers ORDER BY ' . $orderby_sql . ' ' . $order . ';';
-        $subscribers = $wpdb->get_results($select);
+        include_once 'class-subscribers-model.php';
+        $subscribers_model = Subscribers_Model::get_instance();
+
+        $subscribers = $subscribers_model->get_subscribers(array('orderby' => $orderby, 'order' => $order));
+
 
         include 'subscribers_views/default.php';
 

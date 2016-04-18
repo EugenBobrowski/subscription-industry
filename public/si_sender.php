@@ -55,13 +55,70 @@ class si_sender
 
 
     }
+    public function create_newsletter ($post_id) {
+        $templates = apply_filters('si_templates', array());
+
+        $data = get_post_meta($post_id, 'newsletter_data', true);
+        $template_name = get_post_meta($post_id, 'newsletter_template', true);
+
+        $template = $templates[$template_name];
+
+        $this->code = $template['body'];
+
+        foreach ($template['fields'] as $field_name=>$settings ) {
+            if (is_string($data[$field_name])) {
+                $this->code = str_replace("{{$field_name}}", $data[$field_name], $this->code );
+            }
+            $this->code = apply_filters("si_{$template_name}_template_field_{$field_name}_replacing", $this->code, $settings, $data );
+        }
+        
+        
+
+        $this->send();
+
+    }
+
+    /**
+     * @return string
+     */
+    public function get_subscribers()
+    {
+        $subscribers2get = array();
+        foreach ($this->subscribers as $key=>$subscriber ) {
+            if (!is_array($subscriber) && !empty(intval($subscriber))) { 
+                $subscribers2get[] = $subscriber;
+                unset($this->subscribers[$key]);
+            } elseif (!empty($subscriber['id']) && (empty($subscriber['email'] || empty($subscriber['pass'])))) {
+                $subscribers2get[] = $subscriber['id'];
+                unset($this->subscribers[$key]);
+            }
+        }
+        include_once plugin_dir_path(__FILE__) . '../admin/class-subscribers-model.php';
+
+        $subscribers_model = Subscribers_Model::get_instance();
+
+        $subscribers = $subscribers_model->get_subscribers(array(
+            'where' => array(
+                'field' => 'id',
+                'value' => '(' . implode(', ', $subscribers2get) . ')',
+                'compare' => 'IN'
+            ),
+        ), ARRAY_A);
+
+        $this->subscribers = array_merge($subscribers, $this->subscribers);
+
+        
+    }
 
     public function send()
     {
+        
+        
 
         $this->code = $this->letter_shortcodes($this->code);
 
-
+        $this->get_subscribers();
+        
         foreach ($this->subscribers as $subscriber) {
             $this->subscriber = $subscriber;
             if (empty($subscriber['name'])) {
@@ -159,13 +216,12 @@ class si_sender
     public function shortcode_confirm($attr, $content)
     {
         $confirm_link = htmlspecialchars(add_query_arg(array(
-            'pass' => $this->subscriber['pass'],
+            'pass' => $this->subscriber['activation_key'],
         ), get_permalink($this->options['confirm_page'])));
 
         if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
         elseif ('html' == $this->options['confirm_letter_type']) return '<a href="' . $confirm_link . '" title="confirm">' . $content . '</a>';
         else return $confirm_link;
-
     }
 
     public function get_simple_html($title, $body)

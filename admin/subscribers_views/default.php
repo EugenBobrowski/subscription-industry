@@ -1,10 +1,11 @@
 <?php
 /**
- * @vars subscribers
+ * @var $subscribers
+ * @var $orderby
+ * @var $order
+ *
  */
 
-
-if (!isset($subscribers)) $subscribers = array();
 
 
 $link_sort_by_name = htmlspecialchars(add_query_arg(array(
@@ -111,10 +112,10 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                             href="mailto:<?php echo $subscriber->email; ?>"><?php echo $subscriber->email; ?></a>
                     </td>
                     <td class="status column-status" data-colname="Status" style="width: 10em;">
-                        <?php echo (empty($subscriber->activation_key)) ? '<strong style="color: #46b450">Confirmed</strong>' : '<strong style="color: #be3631;">Unconfirmed</strong>'; ?>
+                        <?php echo ($subscriber->status) ? '<strong style="color: #46b450">Confirmed</strong>' : '<strong style="color: #be3631;">Unconfirmed</strong>'; ?>
                     </td>
                     <td class="last-send column-date" data-colname="Last Send">
-                        ----/--/--
+                        <?php echo mysql2date ('Y/m/d H:i:s', $subscriber->last_send); ?>
                     </td>
                 </tr>
             <?php } ?>

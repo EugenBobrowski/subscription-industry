@@ -168,7 +168,7 @@ class Subscribtion_Industry_Public
         $sender = si_sender::get_instance();
 
         $sender->subscribers = array(
-            array('email' => $email, 'name' => $name, 'pass' => $pass)
+            array('email' => $email, 'name' => $name, 'activation_key' => $pass)
         );
 
         $sender->subject = 'Confirm you letter';
