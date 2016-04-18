@@ -55,7 +55,7 @@ class si_sender
 
 
     }
-    public function create_newsletter ($post_id) {
+    public function send_newsletter ($post_id) {
         $templates = apply_filters('si_templates', array());
 
         $data = get_post_meta($post_id, 'newsletter_data', true);
@@ -64,6 +64,8 @@ class si_sender
         $template = $templates[$template_name];
 
         $this->code = $template['body'];
+
+        $this->subject = get_the_title($post_id);
 
         foreach ($template['fields'] as $field_name=>$settings ) {
             if (is_string($data[$field_name])) {

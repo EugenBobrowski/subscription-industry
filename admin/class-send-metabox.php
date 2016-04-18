@@ -121,7 +121,7 @@ class Sender_Metabox
 
             $sender->subscribers = $receivers;
 
-            $sender->create_newsletter($post_id);
+            $sender->send_newsletter($post_id);
             
         }
 
