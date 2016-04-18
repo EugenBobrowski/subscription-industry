@@ -73,7 +73,7 @@ class si_sender
             $name = (empty($name)) ? 'Subscriber' : $name;
             $message = $this->letter_shortcodes_personal($this->code);
 
-            mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
+            wp_mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
         }
     }
 
@@ -162,8 +162,8 @@ class si_sender
             'pass' => $this->subscriber['pass'],
         ), get_permalink($this->options['confirm_page'])));
 
-        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a http="' . $confirm_link . '" >confirm</a>';
-        elseif ('html' == $this->options['confirm_letter_type']) return '<a http="' . $confirm_link . '" >' . $content . '</a>';
+        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a http="' . $confirm_link . '" title="confirm">confirm</a>';
+        elseif ('html' == $this->options['confirm_letter_type']) return '<a http="' . $confirm_link . '" title="confirm">' . $content . '</a>';
         else return $confirm_link;
 
     }
@@ -177,8 +177,7 @@ class si_sender
 <body>
   {$body}
 </body>
-</html>
-";
+</html>";
 
 
         return $message;
