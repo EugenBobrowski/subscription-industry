@@ -148,9 +148,10 @@ class Subscribtion_Industry_Admin
                     )
 
                 ),
-                'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:#dfdfdf;font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="#dfdfdf">
+                'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:#dfdfdf;font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="{bg}">
 <tr>
 <td></td><td width="600">
+    <img src="{logo}" alt="">
 </td><td></td>
 </tr>
 <tr>
