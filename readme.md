@@ -1,15 +1,14 @@
-#Subscribtion Industry by Soft-Industry#
+#Subscribtion Industry by Soft-Industry
 
-##Subscribers##
+##Subscribers
 
 Subscribtion industry use the users table to menage subscribers. 
 
+##Customizing
 
-##Customizing##
+###Add custom template
 
-###Add custom template###
-
-###Customizing form###
+###Customizing form
 
 The Subscribtion Industry plugin provide your subscribe form be ever so custom as you would like. 
 
@@ -37,7 +36,7 @@ Just insert the html code in textarea of widget using the SI Form shortcodes:
   add_filter('si_form_shortcodes', 'my_si_form_shortcode');
   ```
  
-###Customizing messaging###
+###Customizing messaging
  
 1. Create the js function in your theme. 
 2. Use the `si_form_localize` filter to hook the alert function to return messages.

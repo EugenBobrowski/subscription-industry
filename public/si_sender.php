@@ -115,8 +115,6 @@ class si_sender
     public function send()
     {
         
-        
-
         $this->code = $this->letter_shortcodes($this->code);
 
         $this->get_subscribers();
