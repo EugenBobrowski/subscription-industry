@@ -284,20 +284,35 @@ class SI_Subscribe_Widget extends WP_Widget {
 
         $name = (empty($_POST['name'])) ? '' : sanitize_text_field($_POST['name']);
 
-        $plugin_public = Subscribtion_Industry_Public::get_instance();
-
-        $insert = $plugin_public->insert_subscriber($email, $name);
+        include_once plugin_dir_path(__FILE__) . '../admin/class-subscribers-model.php';
 
 
 
+        $subscribers_model = Subscribers_Model::get_instance();
+
+        $insert = $subscribers_model->insert_subscriber($email, $name);
+
+        if (!empty(intval($insert))) {
+            include_once plugin_dir_path(__FILE__) . '../public/si_sender.php';
+            $sender = si_sender::get_instance();
+            $sender->send_confirmation_letter($insert);
+        } else {
+
+        }
+
+
+
+
+
+
+        
         echo json_encode(
             array(
-                'message' => $insert,)
+                'message' => $insert,
+                )
         );
+        exit();
 
-
-
-        wp_die();
     }
 
     /**

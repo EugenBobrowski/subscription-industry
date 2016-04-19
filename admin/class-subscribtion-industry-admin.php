@@ -115,40 +115,40 @@ class Subscribtion_Industry_Admin
     public function default_templates($templates)
     {
         return array_merge($templates, array(
-            'default' => array(
-                'name' => 'Default text',
-                'describtion' => 'The default text template',
-                'type' => 'plain',
-                'preview' => plugin_dir_url(__FILE__) . 'img/email_template_txt.png',
-                'fields' => array(
-                    'content' => array(
-                        'type' => 'textarea',
-                        'title' => 'Content',
+                'default' => array(
+                    'name' => 'Default text',
+                    'describtion' => 'The default text template',
+                    'type' => 'plain',
+                    'preview' => plugin_dir_url(__FILE__) . 'img/email_template_txt.png',
+                    'fields' => array(
+                        'content' => array(
+                            'type' => 'textarea',
+                            'title' => 'Content',
+                        ),
                     ),
+                    'body' => '{content}'
                 ),
-                'body' => '{content}'
-            ),
-            'default_html' => array(
-                'name' => 'Default HTML',
-                'describtion' => 'The default text template',
-                'type' => 'html',
-                'preview' => plugin_dir_url(__FILE__) . 'img/email_template_html.png',
-                'fields' => array(
-                    'content' => array(
-                        'type' => 'editor',
-                        'title' => 'Content',
-                    ),
-                    'logo' => array(
-                        'type' => 'media',
-                        'title' => 'Logo',
-                    ),
-                    'bg' => array(
-                        'type' => 'color',
-                        'title' => 'Background',
-                    )
+                'default_html' => array(
+                    'name' => 'Default HTML',
+                    'describtion' => 'The default text template',
+                    'type' => 'html',
+                    'preview' => plugin_dir_url(__FILE__) . 'img/email_template_html.png',
+                    'fields' => array(
+                        'content' => array(
+                            'type' => 'editor',
+                            'title' => 'Content',
+                        ),
+                        'logo' => array(
+                            'type' => 'media',
+                            'title' => 'Logo',
+                        ),
+                        'bg' => array(
+                            'type' => 'color',
+                            'title' => 'Background',
+                        )
 
-                ),
-                'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:{bg};font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="{bg}">
+                    ),
+                    'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:{bg};font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="{bg}">
 <tr>
 <td></td><td width="600">
     <img src="{logo}" alt="">
@@ -165,34 +165,33 @@ class Subscribtion_Industry_Admin
 <td></td><td width="600"></td><td></td>
 </tr>
 </table>',
-                
-            ),
-            'system' => array(
-                'name' => 'System Template',
-                'describtion' => 'System template',
-                'preview' => plugin_dir_url(__FILE__) . 'img/email_campaigns_en.png',
-                'fields' => array(
-                    'type' => array(
-                        'type' => 'select',
-                        'title' => 'Letter Type',
-                        'options' => array(
-                            'text' => 'Text',
-                            'html' => 'HTML',
+
+                ),
+                'system' => array(
+                    'name' => 'System Template',
+                    'describtion' => 'System template',
+                    'preview' => plugin_dir_url(__FILE__) . 'img/email_campaigns_en.png',
+                    'fields' => array(
+                        'type' => array(
+                            'type' => 'select',
+                            'title' => 'Letter Type',
+                            'options' => array(
+                                'text' => 'Text',
+                                'html' => 'HTML',
+                            ),
+                        ),
+                        'editor' => array(
+                            'type' => 'editor',
+                            'title' => 'Content',
+                        ),
+                        'text' => array(
+                            'type' => 'text',
+                            'title' => 'Content',
                         ),
                     ),
-                    'editor' => array(
-                        'type' => 'editor',
-                        'title' => 'Content',
-                    ),
-                    'text' => array(
-                        'type' => 'text',
-                        'title' => 'Content',
-                    ),
                 ),
-            ),
-
-
-        ));
+            )
+        );
     }
 
     public function subscribers_page()
@@ -222,6 +221,7 @@ class Subscribtion_Industry_Admin
         global $plugin_page;
 
         if (strpos($hook_suffix, $plugin_page)) {
+            include_once plugin_dir_path(__FILE__) . 'html_helper/htmlhelper.php';
             add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
             $this->save_options();
         }

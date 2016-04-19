@@ -43,7 +43,7 @@ class Subscribtion_Industry_Activator
       status int(11) NOT NULL DEFAULT '0',
       last_send datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
       UNIQUE KEY (email),
-      PRIMARY KEY (id)
+      UNIQUE KEY (id)
 	);";
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);

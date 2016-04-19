@@ -55,10 +55,38 @@ class si_sender
 
 
     }
+    public function send_confirmation_letter($subscriber_id)
+    {
+        
+        $this->subject = 'Confirm you letter';
+
+        if ('html' == $this->options['confirm_letter_type']) {
+            $this->code = $this->get_simple_html($this->subject, wpautop($this->options['confirm_request_content']));
+        } else {
+            $this->code = $this['confirm_request_content'];
+        }
+
+        include_once plugin_dir_path(__FILE__) . '../admin/class-subscribers-model.php';
+
+        $subscribers_model = Subscribers_Model::get_instance();
+
+        $this->subscribers = $subscribers_model->get_subscribers(array(
+            'where' => array(
+                'field' => 'id',
+                'value' => $subscriber_id,
+                'compare' => '='
+            ),
+        ), ARRAY_A);
+
+        $this->send();
+
+    }
     public function send_newsletter ($post_id) {
+        
         $templates = apply_filters('si_templates', array());
 
         $data = get_post_meta($post_id, 'newsletter_data', true);
+        
         $template_name = get_post_meta($post_id, 'newsletter_template', true);
 
         $template = $templates[$template_name];
@@ -75,7 +103,9 @@ class si_sender
         }
         
         if ('html' == $template['type']) $this->code = $this->get_simple_html($this->subject, wpautop($this->code));
-        
+
+        $this->get_subscribers();
+
         $this->send();
 
     }
@@ -95,6 +125,7 @@ class si_sender
                 unset($this->subscribers[$key]);
             }
         }
+
         include_once plugin_dir_path(__FILE__) . '../admin/class-subscribers-model.php';
 
         $subscribers_model = Subscribers_Model::get_instance();
@@ -117,8 +148,6 @@ class si_sender
         
         $this->code = $this->letter_shortcodes($this->code);
 
-        $this->get_subscribers();
-        
         foreach ($this->subscribers as $subscriber) {
             $this->subscriber = $subscriber;
             if (empty($subscriber['name'])) {
@@ -217,6 +246,8 @@ class si_sender
     {
         $confirm_link = htmlspecialchars(add_query_arg(array(
             'pass' => $this->subscriber['activation_key'],
+            'actiuon' => '',
+            'email' => 'id',
         ), get_permalink($this->options['confirm_page'])));
 
         if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
@@ -234,8 +265,6 @@ class si_sender
   {$body}
 </body>
 </html>";
-
-
         return $message;
     }
 

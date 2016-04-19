@@ -121,36 +121,6 @@ class Subscribtion_Industry_Public
         register_widget('SI_Subscribe_Widget');
     }
 
-    public function insert_subscriber($email, $name = '', $confirm = true)
-    {
-        global $wpdb;
-
-        $select = 'SELECT activation_key FROM ' . $wpdb->prefix . 'si_subscribers WHERE email=\'' . $email . '\';';
-
-
-        $exists = $wpdb->get_results($select);
-        if (!empty($exists)) {
-            $confirm = '';
-            if ($exists[0]->activation_key) $confirm = 'unconfirmed';
-            return 'exists' . $confirm;
-        }
-
-
-        $pass = ($confirm) ? wp_generate_password(24, true) : '';
-
-        $insert = $wpdb->insert($wpdb->prefix . 'si_subscribers', array(
-            'email' => $email,
-            'name' => $name,
-            'activation_key' => $pass));
-        if (true == $insert) {
-            $this->send_confirmation_letter($email, $name, $pass);
-            return 'success';
-        } else {
-            return $insert;
-        }
-
-    }
-
     public function update_subscriber($data, $where)
     {
         global $wpdb;
@@ -159,26 +129,6 @@ class Subscribtion_Industry_Public
 
     }
 
-    public function send_confirmation_letter($email, $name, $pass)
-    {
-        $options = get_option('si_options');
-
-        include_once 'si_sender.php';
-
-        $sender = si_sender::get_instance();
-
-        $sender->subscribers = array(
-            array('email' => $email, 'name' => $name, 'activation_key' => $pass)
-        );
-
-        $sender->subject = 'Confirm you letter';
-
-        if ('html' == $options['confirm_letter_type']) $sender->code = $sender->get_simple_html($sender->subject, wpautop($options['confirm_request_content']));
-        else $sender->code = $options['confirm_request_content'];
-
-        $sender->send();
-
-    }
 
     public function confirm_key()
     {
