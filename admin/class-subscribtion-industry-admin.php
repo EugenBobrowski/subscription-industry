@@ -138,15 +138,27 @@ class Subscribtion_Industry_Admin
                         'type' => 'editor',
                         'title' => 'Content',
                     ),
+                    'logo' => array(
+                        'type' => 'addMedia',
+                        'title' => 'Your logo',
+                        'default' => '#aaaaaa'
+                    ),
                 ),
-                'body' => '<table>
+                'body' => '<table border="0" cellspacing="0" cellpadding="0" style="background-color:#dfdfdf;font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="#dfdfdf">
+<tr>
+<td></td><td width="600">
+    <a href="'.get_site_url().'"><img src="{logo}" alt="" /></a>
+</td><td></td>
+</tr>
 <tr>
     <td></td>
     <td width="600">
     {content}
 </td>
     <td></td>
-                
+</tr>
+<tr>
+<td></td><td width="600"></td><td></td>
 </tr>
 </table>',
                 

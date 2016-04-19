@@ -233,6 +233,9 @@ if (!class_exists('AtfHtmlHelper')) {
             echo $result;
         }
 
+        public static function color($args = array()){
+            self::colorPicker($args);
+        }
         public static function colorPicker($args = array())
         {
             $default = array(
@@ -241,11 +244,8 @@ if (!class_exists('AtfHtmlHelper')) {
                 'addClass' => '',
             );
 
-            foreach ($default as $key => $value) {
-                if (!isset($args[$key])) {
-                    $args[$key] = $value;
-                }
-            }
+            $args = wp_parse_args($args, $default);
+
             $result = '<div class="customize-control-content"><input type="text" id="' . $args['id'] . '" name="' . $args['name'] . '" value="' . $args['value'] . '" class="' . $args['class'] . $args['addClass'] . '" /></div>';
             if (isset($args['desc'])) {
                 $result .= '<p class="description">' . $args['desc'] . '</p>';
