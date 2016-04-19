@@ -81,7 +81,7 @@ class Newsletters_Metabox
                 ?>
                 <tr>
                     <th scope="row">
-                        <label for="<?php echo $field; ?>"><?php echo $field['title']?></label>
+                        <label for="<?php echo $field['id']; ?>"><?php echo $field['title']?></label>
                     </th>
                     <td>
                         <?php AtfHtmlHelper::$field['type']($field); ?>

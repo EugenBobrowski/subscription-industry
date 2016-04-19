@@ -138,6 +138,15 @@ class Subscribtion_Industry_Admin
                         'type' => 'editor',
                         'title' => 'Content',
                     ),
+                    'logo' => array(
+                        'type' => 'media',
+                        'title' => 'Logo',
+                    ),
+                    'bg' => array(
+                        'type' => 'color',
+                        'title' => 'Background',
+                    )
+
                 ),
                 'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:#dfdfdf;font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="#dfdfdf">
 <tr>
@@ -212,7 +221,7 @@ class Subscribtion_Industry_Admin
         global $plugin_page;
 
         if (strpos($hook_suffix, $plugin_page)) {
-            add_action('admin_enqueue_scripts', array($this, 'enqueue_atfHtmlHelper_assets'));
+            add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
             $this->save_options();
         }
 
@@ -352,7 +361,7 @@ class Subscribtion_Industry_Admin
                     wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
                     exit;
                 } else {
-                    add_action('admin_enqueue_scripts', array($this, 'enqueue_atfHtmlHelper_assets'));
+                    add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
                     return 'load_edit_view';
                 }
                 break;
