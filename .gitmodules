@@ -1,0 +1,3 @@
+[submodule "admin/html_helper"]
+	path = admin/html_helper
+	url = https://eugenbobrowski@bitbucket.org/eugenbobrowski/atfhtmlhelper.git
