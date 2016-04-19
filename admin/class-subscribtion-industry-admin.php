@@ -363,13 +363,6 @@ class Subscribtion_Industry_Admin
 
     }
 
-    public function enqueue_atfHtmlHelper_assets()
-    {
-        wp_enqueue_style('atf-options-si', plugin_dir_url(__FILE__) . 'css/options.css', array(), '1.1', 'all');
-        wp_enqueue_script('atf-options-js', plugin_dir_url(__FILE__) . 'js/atf-options.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), $this->version, false);
-        wp_localize_script('atf-options-js', 'redux_upload', array('url' => get_template_directory_uri() . '/atf/options/admin/assets/blank.png'));
-    }
-
     public function do_delete()
     {
         //ToDO: use confirmation by nonce 

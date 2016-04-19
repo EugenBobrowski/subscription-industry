@@ -9,8 +9,12 @@ class Newsletters_Metabox
     {
         $this->version = $version;
 
+        include_once 'html_helper/htmlhelper.php';
+
+
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
         add_action('add_meta_boxes', array($this, 'newsletter_metabox'));
         add_action('save_post', array($this, 'newsletter_save'));
 
@@ -25,7 +29,7 @@ class Newsletters_Metabox
     {
 
         wp_enqueue_style('subscribtion-industry', plugin_dir_url(__FILE__) . 'css/subscribtion-industry-admin.css', array(), $this->version, 'all');
-        wp_enqueue_style('atf-options-si', plugin_dir_url(__FILE__) . 'css/options.css', array(), '1.1', 'all');
+        
 
     }
 
@@ -36,9 +40,7 @@ class Newsletters_Metabox
      */
     public function enqueue_scripts()
     {
-        wp_enqueue_script('atf-options-js', plugin_dir_url(__FILE__) . 'js/atf-options.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), $this->version, false);
         wp_enqueue_script('subscribtion-industry', plugin_dir_url(__FILE__) . 'js/subscribtion-industry-admin.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), $this->version, false);
-        wp_localize_script('subscribtion-industry', 'redux_upload', array('url' => get_template_directory_uri().'/atf/options/admin/assets/blank.png'));
     }
 
     public function newsletter_metabox()
