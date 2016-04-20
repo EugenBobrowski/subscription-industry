@@ -40,12 +40,14 @@ class Si_Options
      * @param      string $version The version of this plugin.
      */
     protected static $instance;
+
     private function __construct($version)
     {
         $this->version = $version;
         add_action('admin_menu', array($this, 'options_page'));
         include_once plugin_dir_path(__FILE__) . '../html_helper/htmlhelper.php';
     }
+
     public static function get_instance($version)
     {
         if (null === self::$instance) {
@@ -124,7 +126,14 @@ class Si_Options
         ?>
         <div class="wrap atf-fields">
 
-            <h2><?php echo esc_html(get_admin_page_title()); ?></h2>
+            <h2><?php echo esc_html(get_admin_page_title()); ?>
+                <span class="others-parts" style="float: right; margin-right: -15px;">
+            <a href="<?php echo admin_url('edit.php?post_type=newsletters'); ?>"
+               class="page-title-action">Newsletters</a>
+            <a href="<?php echo admin_url('users.php?page=subscribers'); ?>"
+               class="page-title-action">Subscribers</a>
+        </span>
+            </h2>
 
             <form method="post">
 

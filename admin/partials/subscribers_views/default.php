@@ -7,7 +7,6 @@
  */
 
 
-
 $link_sort_by_name = htmlspecialchars(add_query_arg(array(
     'orderby' => 'name',
     'order' => ($orderby == 'name' && $order == 'asc') ? 'desc' : 'asc',
@@ -29,8 +28,13 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
 
 <div class="wrap">
 
-    <h2><?php echo esc_html(get_admin_page_title()); ?><a href="<?php echo add_query_arg(array('action' => 'edit')); ?>"
-                                                          class="page-title-action">Add New</a></h2>
+    <h2><?php echo esc_html(get_admin_page_title()); ?>
+        <a href="<?php echo add_query_arg(array('action' => 'edit')); ?>" class="page-title-action">Add New</a>
+        <span class="others-parts" style="float: right; margin-right: -15px;">
+            <a href="<?php echo admin_url('edit.php?post_type=newsletters'); ?>" class="page-title-action">Newsletters</a>
+            <a href="<?php echo admin_url('options-general.php?page=si-options'); ?>" class="page-title-action">Options</a>
+        </span>
+    </h2>
 
     <form method="get">
         <input type="hidden" name="page" value="subscribers">
@@ -85,7 +89,8 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                         <label class="screen-reader-text" for="subscriber_<?php echo $subscriber->id; ?>">
                             Select <?php echo (empty($subscriber->name)) ? $subscriber->email : $subscriber->name; ?>
                         </label>
-                        <input type="checkbox" name="subscribers[]" id="subscriber_2" class="subscriber" value="<?php echo $subscriber->id; ?>">
+                        <input type="checkbox" name="subscribers[]" id="subscriber_2" class="subscriber"
+                               value="<?php echo $subscriber->id; ?>">
                     </th>
                     <td class="username column-username has-row-actions column-primary" data-colname="Email">
                         <?php echo get_avatar($subscriber->email, 32); ?>
@@ -115,7 +120,7 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                         <?php echo ($subscriber->status) ? '<strong style="color: #46b450">Confirmed</strong>' : '<strong style="color: #be3631;">Unconfirmed</strong>'; ?>
                     </td>
                     <td class="last-send column-date" data-colname="Last Send">
-                        <?php echo mysql2date ('Y/m/d H:i:s', $subscriber->last_send); ?>
+                        <?php echo mysql2date('Y/m/d H:i:s', $subscriber->last_send); ?>
                     </td>
                 </tr>
             <?php } ?>
