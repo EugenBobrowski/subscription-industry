@@ -161,7 +161,7 @@ class si_sender
             $message = $this->letter_shortcodes_personal($this->code);
 
             wp_mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
-            var_dump($message);
+            
         }
     }
 
