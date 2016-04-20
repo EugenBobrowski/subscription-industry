@@ -56,6 +56,13 @@ if (!class_exists('Subscribers_Model')) {
             );
             
         }
+        public function update_last_send ($ids) {
+            global $wpdb;
+            $table = $wpdb->prefix . 'si_subscribers';
+            $ids = implode(', ', $ids);
+            $update = "UPDATE `{$table}` SET `last_send`=NOW() WHERE `id` in ({$ids})";
+            $wpdb->get_results($update);
+        }
         public function confirm ($email, $hash) {
             global $wpdb;
             $table = $wpdb->prefix . 'si_subscribers';

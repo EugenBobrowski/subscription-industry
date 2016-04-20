@@ -148,7 +148,7 @@ class si_sender
     {
         
         $this->code = $this->letter_shortcodes($this->code);
-
+        $receivers = array();
         foreach ($this->subscribers as $subscriber) {
             $this->subscriber = $subscriber;
             if (empty($subscriber['name'])) {
@@ -156,14 +156,23 @@ class si_sender
             } else {
                 $this->headers['To'] = 'To: ' . $subscriber['name'] . ' <' . $subscriber['email'] . '>';
             }
-
+            
             $name = (empty($name)) ? 'Subscriber' : $name;
             $message = $this->letter_shortcodes_personal($this->code);
 
             wp_mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
             
+            $receivers[] = $subscriber['id'];
+            
         }
+        include_once plugin_dir_path(__FILE__) . '../admin/class-subscribers-model.php';
+
+        $subscribers_model = Subscribers_Model::get_instance();
+
+        $subscribers_model->update_last_send($receivers);
+        
     }
+    
 
     public function letter_shortcodes($code)
     {
