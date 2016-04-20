@@ -56,7 +56,7 @@ class Subscribtion_Industry_Public
         $this->version = $version;
 
 
-        add_action('wp', array($this, 'confirm_key'));
+        add_action('the_content', array($this, 'subscribtion_content'));
     }
 
     public static function get_instance($subscribtion_industry = null, $version = null)
@@ -130,14 +130,52 @@ class Subscribtion_Industry_Public
     }
 
 
-    public function confirm_key()
+    public function subscribtion_content($content)
     {
 
-        if (isset($_GET['confirm_subscribtion']) && is_page()) {
-            set_query_var('page_id', 2);
-//			query_posts(array('page_id' => 2));
+        $options = get_option('si_options');
+
+        if ($options['confirm_page'] == get_the_ID() && isset($_GET['action'])  && isset($_GET['hash'])  && isset($_GET['email']) ) {
+            include_once plugin_dir_path(__FILE__) . '../admin/class-subscribers-model.php';
+            switch ($_GET['action']) {
+                case 'unsubscribe':
+                    $subscribtion_model = Subscribers_Model::get_instance();
+                    $email = sanitize_email($_GET['email']);
+                    $hash = sanitize_text_field($_GET['hash']);
+                    $unsubscribe = $subscribtion_model->unsubscribe($email, $hash);
+                    if ($unsubscribe == null) {
+                        return 'No subscriber';
+                    }
+                    $subscriber = array_shift($unsubscribe);
+                    $unsubscribe = array_shift($unsubscribe);
+                    if (empty($subscriber->name)) {
+                        $subscriber->name = 'Subscriber';
+                    }
+                    return '<p>Dear ' . $subscriber->name. '. </p><p> You successfully unsubscribed</p>';
+
+                    break;
+                case 'confirm':
+                    $subscribtion_model = Subscribers_Model::get_instance();
+                    $email = sanitize_email($_GET['email']);
+                    $hash = sanitize_text_field($_GET['hash']);
+                    $unsubscribe = $subscribtion_model->confirm($email, $hash);
+                    if ($unsubscribe == null) {
+                        return 'No subscriber';
+                    }
+                    $subscriber = array_shift($unsubscribe);
+                    $unsubscribe = array_shift($unsubscribe);
+                    if (empty($subscriber->name)) {
+                        $subscriber->name = 'Subscriber';
+                    }
+                    return '<p>Dear ' . $subscriber->name. '. </p><p> You successfully subscribed</p>';
+                    break;
+            }
+        } else {
+            return $content;
         }
+
     }
+
 
     public function replace_title_on_confirm($title)
     {

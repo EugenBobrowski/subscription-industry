@@ -11,7 +11,6 @@ class Newsletters_Metabox
 
         include_once 'html_helper/htmlhelper.php';
 
-
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));

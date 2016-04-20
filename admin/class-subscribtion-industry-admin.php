@@ -362,6 +362,7 @@ class Subscribtion_Industry_Admin
                     wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
                     exit;
                 } else {
+                    include_once plugin_dir_path(__FILE__) . 'html_helper/htmlhelper.php';
                     add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
                     return 'load_edit_view';
                 }
@@ -394,7 +395,7 @@ class Subscribtion_Industry_Admin
     public function do_edit()
     {
 
-        //ToDO: use confirmation by nonce 
+        //ToDO: use confirmation by nonce
         $name = sanitize_text_field($_POST['name']);
         $email = sanitize_email($_POST['email']);
 

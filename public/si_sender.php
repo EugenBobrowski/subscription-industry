@@ -160,6 +160,7 @@ class si_sender
             $message = $this->letter_shortcodes_personal($this->code);
 
             wp_mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
+            var_dump($message);
         }
     }
 
@@ -244,11 +245,24 @@ class si_sender
 
     public function shortcode_confirm($attr, $content)
     {
-        $confirm_link = htmlspecialchars(add_query_arg(array(
-            'pass' => $this->subscriber['activation_key'],
-            'actiuon' => '',
-            'email' => 'id',
-        ), get_permalink($this->options['confirm_page'])));
+        $confirm_link = add_query_arg(array(
+            'hash' => $this->subscriber['activation_key'],
+            'action' => 'confirm',
+            'email' => $this->subscriber['email'],
+        ), get_permalink($this->options['confirm_page']));
+
+        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
+        elseif ('html' == $this->options['confirm_letter_type']) return '<a href="' . $confirm_link . '" title="confirm">' . $content . '</a>';
+        else return $confirm_link;
+    }
+
+    public function shortcode_unsubscribe($attr, $content)
+    {
+        $confirm_link = add_query_arg(array(
+            'hash' => $this->subscriber['activation_key'],
+            'action' => 'unsubscribe',
+            'email' => $this->subscriber['email'],
+        ), get_permalink($this->options['confirm_page']));
 
         if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
         elseif ('html' == $this->options['confirm_letter_type']) return '<a href="' . $confirm_link . '" title="confirm">' . $content . '</a>';
