@@ -24,7 +24,8 @@ class si_sender
     {
         $this->letter_shortcodes_personal = apply_filters('si_letter_shortcodes_personal', array(
             'subscriber' => array($this, 'shortcode_subscriber'),
-            'confirm' => array($this, 'shortcode_confirm')
+            'confirm' => array($this, 'shortcode_confirm'),
+            'unsubscribe' => array($this, 'shortcode_unsubscribe'),
         ));
         $this->letter_shortcodes = apply_filters('si_letter_shortcodes', array());
 
