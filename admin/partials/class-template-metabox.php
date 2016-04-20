@@ -8,9 +8,7 @@ class Newsletters_Metabox
     private function __construct($version)
     {
         $this->version = $version;
-
-        include_once 'html_helper/htmlhelper.php';
-
+        include_once plugin_dir_path(__FILE__) . '../html_helper/htmlhelper.php';
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
@@ -48,7 +46,6 @@ class Newsletters_Metabox
     }
     public function newsletter_metabox_callback($post)
     {
-        include_once 'htmlhelper.php';
 
         $templates = apply_filters('si_templates', array());
 
@@ -64,7 +61,6 @@ class Newsletters_Metabox
         $current_template = (empty($current_template) || !array_key_exists($current_template, $templates)) ? 'default' : $current_template;
 
         $data = get_post_meta($post->ID, 'newsletter_data', true);
-
 
 
         ?>

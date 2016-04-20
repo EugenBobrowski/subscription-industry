@@ -65,13 +65,13 @@ class Subscribtion_Industry_Admin
 
     public function load_metabox()
     {
-        include_once 'class-template-metabox.php';
+        include_once plugin_dir_path(__FILE__) . 'partials/class-template-metabox.php';
         Newsletters_Metabox::get_instance($this->version);
     }
 
     public function load_metabox_send()
     {
-        include_once 'class-send-metabox.php';
+        include_once plugin_dir_path(__FILE__) . 'partials/class-send-metabox.php';
         Sender_Metabox::get_instance($this->version);
     }
 

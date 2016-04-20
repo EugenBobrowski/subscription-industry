@@ -8,7 +8,7 @@ class Sender_Metabox
     private function __construct($version)
     {
         $this->version = $version;
-
+        include_once plugin_dir_path(__FILE__) . '../html_helper/htmlhelper.php';
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
@@ -44,9 +44,9 @@ class Sender_Metabox
 
     public function newsletter_metabox_callback($post)
     {
-        include_once 'htmlhelper.php';
 
-        include_once 'class-subscribers-model.php';
+
+        include_once plugin_dir_path(__FILE__) . '../class-subscribers-model.php';
 
         $subscribers_model = Subscribers_Model::get_instance();
 
