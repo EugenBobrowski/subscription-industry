@@ -296,19 +296,14 @@ class SI_Subscribe_Widget extends WP_Widget {
             include_once plugin_dir_path(__FILE__) . '../public/si_sender.php';
             $sender = si_sender::get_instance();
             $sender->send_confirmation_letter($insert);
+            $message = 'success';
         } else {
-
+            $message = $insert;
         }
 
-
-
-
-
-
-        
         echo json_encode(
             array(
-                'message' => $insert,
+                'message' => $message,
                 )
         );
         exit();
