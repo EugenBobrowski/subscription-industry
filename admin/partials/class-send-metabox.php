@@ -111,7 +111,7 @@ class Sender_Metabox
                 if (!empty($receiver)) $receivers[] = $receiver;
             }
 
-            include_once plugin_dir_path(__FILE__) . '../public/si_sender.php';
+            include_once plugin_dir_path(__FILE__) . '../public/class-si-sender.php';
 
             $sender = si_sender::get_instance();
 

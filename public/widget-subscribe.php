@@ -293,7 +293,7 @@ class SI_Subscribe_Widget extends WP_Widget {
         $insert = $subscribers_model->insert_subscriber($email, $name);
 
         if (!empty(intval($insert))) {
-            include_once plugin_dir_path(__FILE__) . '../public/si_sender.php';
+            include_once plugin_dir_path(__FILE__) . '../public/class-si-sender.php';
             $sender = si_sender::get_instance();
             $sender->send_confirmation_letter($insert);
             $message = 'success';
