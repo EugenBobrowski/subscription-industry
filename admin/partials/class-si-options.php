@@ -45,7 +45,7 @@ class Si_Options
     {
         $this->version = $version;
         add_action('admin_menu', array($this, 'options_page'));
-        include_once plugin_dir_path(__FILE__) . '../html_helper/htmlhelper.php';
+
     }
 
     public static function get_instance($version)
@@ -71,6 +71,7 @@ class Si_Options
         if (strpos($hook_suffix, $plugin_page)) {
             add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
             $this->save_options();
+            include_once plugin_dir_path(__FILE__) . '../html_helper/htmlhelper.php';
         }
 
     }
