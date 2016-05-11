@@ -13,7 +13,7 @@
  * @package           Subscribtion_Industry
  *
  * @wordpress-plugin
- * Plugin Name:       Subscribtion Industry
+ * Plugin Name:       Subscription Industry
  * Plugin URI:        http://example.com/subscribtion-industry-uri/
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
  * Version:           1.0.0

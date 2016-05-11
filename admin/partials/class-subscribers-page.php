@@ -111,17 +111,20 @@ class Subscribers_Page
                     wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
                     exit;
                 } else {
-                    include_once plugin_dir_path(__FILE__) . '../html_helper/htmlhelper.php';
-                    add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
+                    include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
+                    add_action('admin_enqueue_scripts', array($this, 'assets'));
                     return 'load_edit_view';
                 }
                 break;
             default:
                 return 'load_default_view';
         }
-
-
     }
+    public function assets() {
+        AtfHtmlHelper::assets(null);
+    }
+
+
 
     public function do_delete()
     {

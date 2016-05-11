@@ -8,7 +8,7 @@ class Newsletters_Metabox
     private function __construct($version)
     {
         $this->version = $version;
-        include_once plugin_dir_path(__FILE__) . '../html_helper/htmlhelper.php';
+        include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
@@ -95,7 +95,8 @@ class Newsletters_Metabox
                         'id' => 'template',
                         'name' => 'template',
                         'value' => $current_template,
-                        'class' => 'radio-image',
+                        'class' => 'check-buttons',
+                        'vertical' => false,
                         'options' => $templates_opts
                     )); ?>
                 </td>

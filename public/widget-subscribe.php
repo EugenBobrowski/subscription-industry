@@ -17,7 +17,8 @@
 class SI_Subscribe_Widget extends WP_Widget {
 
 
-    public $used_tags;
+    public $used_tags = array();
+    public $pattern;
     public $si_widget_shortcodes;
     /**
      * Sets up a new Text widget instance.
@@ -26,7 +27,7 @@ class SI_Subscribe_Widget extends WP_Widget {
      * @access public
      */
     public function __construct() {
-        $widget_ops = array('classname' => 'widget_text', 'description' => __('Customizible Form'));
+        $widget_ops = array('classname' => 'widget-si-form', 'description' => __('Customizible Form'));
         $control_ops = array('width' => 400, 'height' => 350);
         parent::__construct('si_subscribe_form', __('Subscribe Form'), $widget_ops, $control_ops);
 
@@ -38,12 +39,15 @@ class SI_Subscribe_Widget extends WP_Widget {
         add_action('wp_print_scripts', array($this, 'localize'));
 
         $this->si_widget_shortcodes = apply_filters('si_form_shortcodes',  array(
+            'form' => array($this, 'shortcode_form'),
             'email' => array($this, 'shortcode_email'),
             'name' => array($this, 'shortcode_name'),
             'submit'  => array($this, 'shortcode_submit'),
             'button' => array($this, 'shortcode_button'),
             'message' => array($this, 'shortcode_message'),
         ) );
+
+        $this->pattern = get_shortcode_regex( array_keys( $this->si_widget_shortcodes ) );
     }
     /**
      * Outputs the content for the current Text widget instance.
@@ -80,18 +84,22 @@ class SI_Subscribe_Widget extends WP_Widget {
 
         if ( ! empty( $title ) ) {
             echo $args['before_title'] . $title . $args['after_title'];
-        } ?>
-        <form class="si-widget-form"><?php echo !empty( $instance['filter'] ) ? wpautop( $code ) : $code; ?></form>
-        <?php
+        }
+
+        $code = !empty( $instance['filter'] ) ? wpautop( $code ) : $code;
+
+        if (in_array('form', $this->used_tags)) echo '<div class="si-widget-content">' . $code . '</div>';
+        else echo '<form class="si-widget-content si-widget-form">' . $code . '</form>';
+
         echo $args['after_widget'];
     }
     public function form_shortcodes ($code) {
 
-        $pattern = get_shortcode_regex( array_keys( $this->si_widget_shortcodes ) );
+        $output = preg_replace_callback( "/$this->pattern/", array($this, 'do_shortcode_tag'), $code );
 
-        $code = preg_replace_callback( "/$pattern/", array($this, 'do_shortcode_tag'), $code );
+        if ($output != $code) $output = $this->form_shortcodes($output);
 
-        return $code;
+        return $output;
     }
     /**
      * Clone of do_shortcode_tag()
@@ -132,9 +140,25 @@ class SI_Subscribe_Widget extends WP_Widget {
         }
 
     }
+    public function shortcode_form ($attr, $content) {
+        $this->used_tags[] = 'form';
 
+        $attributes = '';
+        $attr = wp_parse_args($attr, array(
+            'class' => '',
+        ));
+        $attr['class'] .= ' si-widget-form';
+        foreach ($attr as $attribute=>$value) {
+            $attributes .= $attribute . '="' . $value . '" ';
+        }
+
+        return '<form ' . $attributes . '>'. $content . '</form>';
+    }
     public function shortcode_email ($attr) {
         $attributes = '';
+        $attr = wp_parse_args($attr, array(
+
+        ));
         foreach ($attr as $attribute=>$value) {
             $attributes .= $attribute . '="' . $value . '" ';
         }
@@ -143,6 +167,9 @@ class SI_Subscribe_Widget extends WP_Widget {
     }
     public function shortcode_name ($attr) {
         $attributes = '';
+        $attr = wp_parse_args($attr, array(
+
+        ));
         foreach ($attr as $attribute=>$value) {
             $attributes .= $attribute . '="' . $value . '" ';
         }
@@ -151,19 +178,14 @@ class SI_Subscribe_Widget extends WP_Widget {
     }
     public function shortcode_submit ($attr) {
         $attributes = '';
+        $attr = wp_parse_args($attr, array(
+
+        ));
         foreach ($attr as $attribute=>$value) {
             $attributes .= $attribute . '="' . $value . '" ';
         }
 
         return '<input type="submit" ' . $attributes . '>';
-    }
-    public function shortcode_button ($attr, $content) {
-        $attributes = '';
-        foreach ($attr as $attribute=>$value) {
-            $attributes .= $attribute . '="' . $value . '" ';
-        }
-
-        return '<button ' . $attributes . '>'. $content . '</button>';
     }
 
     public function shortcode_message ($attr, $content) {
@@ -188,7 +210,6 @@ class SI_Subscribe_Widget extends WP_Widget {
                     'unexpectedError' => "Oops.. Unexpected error occurred.",
                     'invalidEmail' => 'Invalid email address.'
                 ),
-                'callmessage' => 'alert',
             ))
         );
     }
@@ -198,12 +219,9 @@ class SI_Subscribe_Widget extends WP_Widget {
         <script id="si_widget" type="text/javascript">
             (function ($) {
                 var siSubscribeForms;
-                var siAlertFunction;
                 $(document).ready(function ($) {
                     siSubscribeForms = $('.si-widget-form');
                     console.log(siFormAjax.callmessage);
-                    siAlertFunction = window[siFormAjax.callmessage];
-
 
                     var do_ajax = function (data) {
                         if (typeof data == 'undefined') {
@@ -222,14 +240,18 @@ class SI_Subscribe_Widget extends WP_Widget {
                         $.post(siFormAjax.url, data, function (response) {
                             console.log(response);
                             response = JSON.parse(response);
-                            if (response.message != undefined && siFormAjax.messages[response.message] != undefined) {
-                                siAlertFunction(siFormAjax.messages[response.message]);
+                            if (response.message_id != undefined && siFormAjax.messages[response.message_id] != undefined) {
+                                console.log('message to alert:', siFormAjax.messages[response.message_id]);
+                                siSubscribeForms.trigger('si.subscribe.alert', response);
                             } else {
-                                console.log(siFormAjax.messages, response);
+                                console.log((siFormAjax.messages[response.message_id] != undefined), 'Something wrong:', siFormAjax.messages, response);
                             }
-
                         });
                     };
+                    siSubscribeForms.on('si.subscribe.alert', function (e, responseObj) {
+                        if (e.isDefaultPrevented()) return;
+                        alert(siFormAjax.messages[responseObj.message_id]);
+                    });
 
                     siSubscribeForms.submit(function(e){
                         e.preventDefault();
@@ -275,12 +297,12 @@ class SI_Subscribe_Widget extends WP_Widget {
 
         if (!isset($_POST['email']))
             wp_die( json_encode( array(
-                'message' => 'emptyMail', 'add_message'=>'Empty E-mail')));
+                'message_id' => 'emptyMail', 'add_message'=>'Empty E-mail')));
 
         $email = sanitize_email($_POST['email']);
 
         if (empty($email)) wp_die( json_encode( array(
-            'message' => 'error', 'message'=>'Wrong E-mail')));
+            'message_id' => 'error', 'message'=>'Wrong E-mail')));
 
         $name = (empty($_POST['name'])) ? '' : sanitize_text_field($_POST['name']);
 
@@ -296,14 +318,14 @@ class SI_Subscribe_Widget extends WP_Widget {
             include_once plugin_dir_path(__FILE__) . '../public/class-si-sender.php';
             $sender = si_sender::get_instance();
             $sender->send_confirmation_letter($insert);
-            $message = 'success';
+            $message_id = 'success';
         } else {
-            $message = $insert;
+            $message_id = $insert;
         }
 
         echo json_encode(
             array(
-                'message' => $message,
+                'message_id' => $message_id,
                 )
         );
         exit();

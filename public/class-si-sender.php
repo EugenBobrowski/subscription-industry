@@ -64,7 +64,7 @@ class si_sender
         if ('html' == $this->options['confirm_letter_type']) {
             $this->code = $this->get_simple_html($this->subject, wpautop($this->options['confirm_request_content']));
         } else {
-            $this->code = $this['confirm_request_content'];
+            $this->code = $this->options['confirm_request_content'];
         }
 
         include_once plugin_dir_path(__FILE__) . '../admin/class-subscribers-model.php';

@@ -71,9 +71,8 @@ class Si_Options
         if (strpos($hook_suffix, $plugin_page)) {
             add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
             $this->save_options();
-            include_once plugin_dir_path(__FILE__) . '../html_helper/htmlhelper.php';
+            include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
         }
-
     }
 
     public function save_options()
