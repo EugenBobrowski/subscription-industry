@@ -8,13 +8,14 @@ module.exports = function (grunt) {
 					optimization: 2
 					},
 				files: {
-					"admin/css/options.css": "admin/css/options.less"
+					"admin/atf-fields/assets/fields.css": "admin/atf-fields/assets/fields.less",
+					"admin/css/subscribtion-industry-admin.css": "admin/css/subscribtion-industry-admin.less"
 				}
 			}
 		},
 		watch: {
 			styles: {
-				files: ['admin/css/**/*.less'], // which files to watch
+				files: ['admin/**/*.less'], // which files to watch
 				tasks: ['less'],
 				options: {
 					nospawn: true
