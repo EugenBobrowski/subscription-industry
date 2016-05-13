@@ -47,7 +47,28 @@ class Subscribtion_Industry_Activator
 	);";
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
+
+
+        $options = get_option('si_options');
+
+        if (empty($options['confirm_page'])) {
+            $id = wp_insert_post(array(
+                'post_content' => '',
+                'post_title' => 'Subscription page',
+                'post_status' => 'publish',
+                'post_type' => 'page',
+                'comment_status' => false,
+                'ping_status' => '',
+            ));
+            if (!is_wp_error($id)) update_option('si_options', array('confirm_page' => $id));
+        }
+
+
+
+
     }
+
+
 
 
 }

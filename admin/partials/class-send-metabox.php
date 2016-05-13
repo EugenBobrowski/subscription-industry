@@ -82,6 +82,14 @@ class Sender_Metabox
                         'vertical' => false,
                         'options' => $subscribers_opts
                     )); ?>
+<?php AtfHtmlHelper::checkbox(array(
+                        'id' => 'receivers',
+                        'name' => 'receivers',
+                        'value' => '',
+                        'class' => 'check-buttons',
+                        'vertical' => false,
+                        'options' => $subscribers_opts
+                    )); ?>
 
                 </td>
             </tr>

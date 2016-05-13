@@ -172,29 +172,6 @@ class Subscribtion_Industry_Admin
 </table>',
 
                 ),
-                'system' => array(
-                    'name' => 'System Template',
-                    'describtion' => 'System template',
-                    'preview' => plugin_dir_url(__FILE__) . 'img/email_campaigns_en.png',
-                    'fields' => array(
-                        'type' => array(
-                            'type' => 'select',
-                            'title' => 'Letter Type',
-                            'options' => array(
-                                'text' => 'Text',
-                                'html' => 'HTML',
-                            ),
-                        ),
-                        'editor' => array(
-                            'type' => 'editor',
-                            'title' => 'Content',
-                        ),
-                        'text' => array(
-                            'type' => 'text',
-                            'title' => 'Content',
-                        ),
-                    ),
-                ),
             )
         );
     }

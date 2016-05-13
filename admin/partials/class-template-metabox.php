@@ -51,7 +51,7 @@ class Newsletters_Metabox
 
         $templates_opts = array();
         foreach ($templates as $id => $tmpl) {
-            $templates_opts[$id] = '<img src="' . $tmpl['preview'] . '" width="150" height="300"/><br />' . $tmpl['name'];
+            $templates_opts[$id] = '<img src="' . $tmpl['preview'] . '" width="150" height="200"/><br />' . $tmpl['name'];
         }
 
         wp_nonce_field( plugin_basename(__FILE__), 'newsletter_template_nonce' );
@@ -71,7 +71,10 @@ class Newsletters_Metabox
             foreach ($templates[$current_template]['fields'] as $key=>$field) {
                 $field['id'] = $key;
                 $field['name'] = $key;
-                $field['value'] = (isset ($data[$key])) ? $data[$key] : '';
+                $field['default'] = (isset ($field['default'])) ? $field['default'] : '';
+                $field['value'] = (isset ($data[$key])) ? $data[$key] : $field['default'];
+
+
 
                 ?>
                 <tr>

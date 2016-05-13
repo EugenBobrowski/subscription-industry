@@ -38,7 +38,10 @@ class si_sender
                 'To confirm please go this link [confirm]confirm[/confirm]',
             'confirm_letter_type' => 'plain',
         ));
+        if (empty($this->options['confirm_page'])) {
+            get_pages();
 
+        }
         if (empty($this->options['email'])) {
             $sitename = strtolower($_SERVER['SERVER_NAME']);
             if (substr($sitename, 0, 4) == 'www.') {
