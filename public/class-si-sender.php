@@ -106,7 +106,11 @@ class si_sender
             $this->code = apply_filters("si_{$template_name}_template_field_{$field_name}_replacing", $this->code, $settings, $data );
         }
         
-        if ('html' == $template['type']) $this->code = $this->get_simple_html($this->subject, wpautop($this->code));
+        if ('html' == $template['type']) {
+            $this->headers['Content-type'] = "Content-type: text/{$template['type']}; charset={$this->charset}";
+            $this->code = $this->get_simple_html($this->subject, wpautop($this->code));
+        }
+
 
         $this->get_subscribers();
 
