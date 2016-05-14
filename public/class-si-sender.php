@@ -19,6 +19,7 @@ class si_sender
     public $subject;
     public $options;
     public $charset = 'UTF-8';
+    public $letter_type = 'plain';
 
     private function __construct()
     {
@@ -275,15 +276,15 @@ class si_sender
 
     public function shortcode_unsubscribe($attr, $content)
     {
-        $confirm_link = add_query_arg(array(
+        $nsubscribe_link = add_query_arg(array(
             'hash' => $this->subscriber['activation_key'],
             'action' => 'unsubscribe',
             'email' => $this->subscriber['email'],
         ), get_permalink($this->options['confirm_page']));
 
-        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
-        elseif ('html' == $this->options['confirm_letter_type']) return '<a href="' . $confirm_link . '" title="confirm">' . $content . '</a>';
-        else return $confirm_link;
+        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $nsubscribe_link . '" title="confirm">confirm</a>';
+        elseif ('html' == $this->options['confirm_letter_type']) return '<a href="' . $nsubscribe_link . '" title="confirm">' . $content . '</a>';
+        else return $nsubscribe_link;
     }
 
     public function get_simple_html($title, $body)
