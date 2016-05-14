@@ -105,7 +105,7 @@ class Sender_Metabox
 
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             return $post_id;
-        var_dump($_POST['receivers']); wp_die();
+        
         if (isset($_POST['receivers']) && is_array($_POST['receivers'])) {
             $receivers = array();
             foreach ($_POST['receivers'] as $key => $receiver) {
