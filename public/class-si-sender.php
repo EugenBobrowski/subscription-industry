@@ -66,16 +66,14 @@ class si_sender
     public function send_confirmation_letter($subscriber_id)
     {
         
-        
-        
-        
         $this->subject = 'Confirm you letter';
         $this->letter_type = $this->options['confirm_letter_type'];
         
         $this->get_headers();
 
         if ('html' == $this->letter_type) {
-            $this->code = $this->get_simple_html($this->subject, wpautop($this->options['confirm_request_content']));
+            
+            $this->code = $this->get_simple_html($this->subject, apply_filters('si_confirmation_letter_html', wpautop($this->options['confirm_request_content'])));
         } else {
             $this->code = $this->options['confirm_request_content'];
         }
