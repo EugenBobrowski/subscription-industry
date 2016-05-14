@@ -274,7 +274,7 @@ class si_sender
     public function shortcode_confirm($attr, $content)
     {
         $confirm_link = add_query_arg(array(
-            'hash' => $this->subscriber['activation_key'],
+            'hash' => hash('md5', $this->subscriber['activation_key']),
             'action' => 'confirm',
             'email' => $this->subscriber['email'],
         ), get_permalink($this->options['confirm_page']));
