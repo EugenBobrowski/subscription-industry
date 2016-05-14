@@ -40,17 +40,20 @@ if (!class_exists('Subscribers_Model')) {
         public function unsubscribe ($email, $hash) {
             global $wpdb;
             $table = $wpdb->prefix . 'si_subscribers';
-            $select = 'SELECT * FROM ' . $table . ' WHERE email=\'' . $email . '\' AND activation_key=\'' . $hash . '\';';
+            $select = 'SELECT * FROM ' . $table . ' WHERE email=\'' . $email . '\';';
             $r = $wpdb->get_results($select );
-            if (empty($r)) {
-                return null;
-            }
+            if (empty($r))  return null;
+
             $r = array_shift($r);
+
+            if ($hash != hash('md5', $r->activation_key)) return null;
+
             if (1 == $r->status) {
                 $unsubscribe = $wpdb->update($table, array('status' => 0), array('id' => $r->id));
             } else {
                 $unsubscribe = 0;
             }
+
             return  array(
                 $r, $unsubscribe
             );
