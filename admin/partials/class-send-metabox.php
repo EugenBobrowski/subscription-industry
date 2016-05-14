@@ -80,15 +80,7 @@ class Sender_Metabox
                         'value' => '',
                         'class' => 'check-buttons',
                         'vertical' => false,
-                        'options' => $subscribers_opts
-                    )); ?>
-<?php AtfHtmlHelper::checkbox(array(
-                        'id' => 'receivers',
-                        'name' => 'receivers',
-                        'value' => '',
-                        'class' => 'check-buttons',
-                        'vertical' => false,
-                        'options' => $subscribers_opts
+                        'options' => $subscribers_opts,
                     )); ?>
 
                 </td>
@@ -113,7 +105,7 @@ class Sender_Metabox
 
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             return $post_id;
-
+        var_dump($_POST['receivers']); wp_die();
         if (isset($_POST['receivers']) && is_array($_POST['receivers'])) {
             $receivers = array();
             foreach ($_POST['receivers'] as $key => $receiver) {

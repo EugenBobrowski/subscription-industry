@@ -109,7 +109,7 @@ class si_sender
 
         $this->subject = get_the_title($post_id);
 
-        $this->letter_type = $this->$template['type'];
+        $this->letter_type = $template['type'];
 
         $this->get_headers();
 
@@ -179,6 +179,9 @@ class si_sender
             
             $name = (empty($name)) ? 'Subscriber' : $name;
             $message = $this->letter_shortcodes_personal($this->code);
+
+            var_dump($message);
+            wp_die();
 
             wp_mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
             
@@ -294,7 +297,7 @@ class si_sender
             'email' => $this->subscriber['email'],
         ), get_permalink($this->options['confirm_page']));
 
-        if ('html' == $this->letter_type && null == $content) return '<a href="' . $nsubscribe_link . '" title="confirm">confirm</a>';
+        if ('html' == $this->letter_type && null == $content) return '<a href="' . $nsubscribe_link . '" title="confirm">' . __('Unsubscribe', 'subscribtion-industry') . '</a>';
         elseif ('html' == $this->letter_type) return '<a href="' . $nsubscribe_link . '" title="confirm">' . $content . '</a>';
         else return $nsubscribe_link;
     }
