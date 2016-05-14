@@ -51,21 +51,30 @@ class si_sender
             $this->options['email'] = 'no-reply@' . $sitename;
         }
 
+        
+
+
+    }
+    public function get_headers () {
         $this->headers['MIME-Version'] = "MIME-Version: 1.0";
-        $this->headers['Content-type'] = "Content-type: text/{$this->options['confirm_letter_type']}; charset={$this->charset}";
+        $this->headers['Content-type'] = "Content-type: text/{$this->letter_type}; charset={$this->charset}";
         $this->headers['To'] = "";
         $this->headers['From'] = "From: {$this->options['email']}";
         $this->headers['Reply-To'] = "Reply-To: {$this->options['email']}";
         $this->headers['X-Mailer'] = "X-Mailer: PHP/" . phpversion();
-
-
     }
     public function send_confirmation_letter($subscriber_id)
     {
         
+        
+        
+        
         $this->subject = 'Confirm you letter';
+        $this->letter_type = $this->options['confirm_letter_type'];
+        
+        $this->get_headers();
 
-        if ('html' == $this->options['confirm_letter_type']) {
+        if ('html' == $this->letter_type) {
             $this->code = $this->get_simple_html($this->subject, wpautop($this->options['confirm_request_content']));
         } else {
             $this->code = $this->options['confirm_request_content'];
@@ -100,6 +109,10 @@ class si_sender
 
         $this->subject = get_the_title($post_id);
 
+        $this->letter_type = $this->$template['type'];
+
+        $this->get_headers();
+
         foreach ($template['fields'] as $field_name=>$settings ) {
             if (is_string($data[$field_name])) {
                 $this->code = str_replace("{{$field_name}}", $data[$field_name], $this->code );
@@ -107,8 +120,7 @@ class si_sender
             $this->code = apply_filters("si_{$template_name}_template_field_{$field_name}_replacing", $this->code, $settings, $data );
         }
         
-        if ('html' == $template['type']) {
-            $this->headers['Content-type'] = "Content-type: text/{$template['type']}; charset={$this->charset}";
+        if ('html' == $this->letter_type) {
             $this->code = $this->get_simple_html($this->subject, wpautop($this->code));
         }
 
@@ -269,8 +281,8 @@ class si_sender
             'email' => $this->subscriber['email'],
         ), get_permalink($this->options['confirm_page']));
 
-        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
-        elseif ('html' == $this->options['confirm_letter_type']) return '<a href="' . $confirm_link . '" title="confirm">' . $content . '</a>';
+        if ('html' == $this->letter_type && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
+        elseif ('html' == $this->letter_type) return '<a href="' . $confirm_link . '" title="confirm">' . $content . '</a>';
         else return $confirm_link;
     }
 
@@ -282,8 +294,8 @@ class si_sender
             'email' => $this->subscriber['email'],
         ), get_permalink($this->options['confirm_page']));
 
-        if ('html' == $this->options['confirm_letter_type'] && null == $content) return '<a href="' . $nsubscribe_link . '" title="confirm">confirm</a>';
-        elseif ('html' == $this->options['confirm_letter_type']) return '<a href="' . $nsubscribe_link . '" title="confirm">' . $content . '</a>';
+        if ('html' == $this->letter_type && null == $content) return '<a href="' . $nsubscribe_link . '" title="confirm">confirm</a>';
+        elseif ('html' == $this->letter_type) return '<a href="' . $nsubscribe_link . '" title="confirm">' . $content . '</a>';
         else return $nsubscribe_link;
     }
 
