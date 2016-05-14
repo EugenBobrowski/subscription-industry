@@ -180,9 +180,6 @@ class si_sender
             $name = (empty($name)) ? 'Subscriber' : $name;
             $message = $this->letter_shortcodes_personal($this->code);
 
-            var_dump($message);
-            wp_die();
-
             wp_mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
             
             $receivers[] = $subscriber['id'];
@@ -291,15 +288,15 @@ class si_sender
 
     public function shortcode_unsubscribe($attr, $content)
     {
-        $nsubscribe_link = add_query_arg(array(
+        $subscribe_link = add_query_arg(array(
             'hash' => $this->subscriber['activation_key'],
             'action' => 'unsubscribe',
             'email' => $this->subscriber['email'],
         ), get_permalink($this->options['confirm_page']));
 
-        if ('html' == $this->letter_type && null == $content) return '<a href="' . $nsubscribe_link . '" title="confirm">' . __('Unsubscribe', 'subscribtion-industry') . '</a>';
-        elseif ('html' == $this->letter_type) return '<a href="' . $nsubscribe_link . '" title="confirm">' . $content . '</a>';
-        else return $nsubscribe_link;
+        if ('html' == $this->letter_type && null == $content) return '<a href="' . $subscribe_link . '" title="confirm">' . __('Unsubscribe', 'subscribtion-industry') . '</a>';
+        elseif ('html' == $this->letter_type) return '<a href="' . $subscribe_link . '" title="confirm">' . $content . '</a>';
+        else return $subscribe_link;
     }
 
     public function get_simple_html($title, $body)
