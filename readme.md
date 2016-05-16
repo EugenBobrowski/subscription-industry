@@ -1,5 +1,9 @@
 #Subscribtion Industry by Soft-Industry
 
+* Сделать отправку имейлов в разделе подписчиков и непосредственно из настроек Ньюзлеттера.
+* Реализовать группы отмеченные.
+
+
 ##Subscribers
 
 Subscribtion industry use the users table to menage subscribers. 

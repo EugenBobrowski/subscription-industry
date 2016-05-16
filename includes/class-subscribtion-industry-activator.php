@@ -34,17 +34,31 @@ class Subscribtion_Industry_Activator
     {
         global $wpdb;
         $table_name = $wpdb->prefix . 'si_subscribers';
-        $sql = "CREATE TABLE {$table_name} (
+        $table_groups_name = $wpdb->prefix . 'si_groups_relations';
+        $sql = "
+CREATE TABLE {$table_name} (
 	  id int(11) NOT NULL AUTO_INCREMENT,
       name varchar(255) DEFAULT NULL,
       email varchar(255) DEFAULT NULL,
       user_id int(11),
       activation_key varchar(255),
       status int(11) NOT NULL DEFAULT '0',
+      newsletter_term int(11) NOT NULL DEFAULT '0',
       last_send datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
       UNIQUE KEY (email),
       UNIQUE KEY (id)
-	);";
+	);
+	
+CREATE TABLE {$table_groups_name} (
+      `subscriber_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+      `term_taxonomy_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+      `term_order` int(11) NOT NULL DEFAULT '0',
+      PRIMARY KEY (`subscriber_id`,`term_taxonomy_id`),
+      KEY `term_taxonomy_id` (`term_taxonomy_id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+	
+	";
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
 
@@ -64,11 +78,7 @@ class Subscribtion_Industry_Activator
         }
 
 
-
-
     }
-
-
 
 
 }

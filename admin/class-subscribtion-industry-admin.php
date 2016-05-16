@@ -114,6 +114,18 @@ class Subscribtion_Industry_Admin
             'supports' => array('title', 'page-attributes'),
         );
         register_post_type('newsletters', $args);
+
+        register_taxonomy(
+            'newsletter_groups',
+            'newsletters',
+            array(
+                'label' => __( 'Groups' ),
+                'rewrite' => array( 'slug' => 'groups' ),
+                'show_ui' => true,
+                'show_admin_column'     => true,
+                'hierarchical' => false,
+            )
+        );
     }
 
 
