@@ -2,13 +2,23 @@
 
 * Сделать отправку имейлов в разделе подписчиков и непосредственно из настроек Ньюзлеттера.
 * Реализовать группы отмеченные.
-
+* Реализовать предпросмотр рассылки без добавления вида в тему. Так что бы вид находился  в плагине.
+* Отчеты об отправке можно выставлять.
 
 ##Subscribers
 
 Subscribtion industry use the users table to menage subscribers. 
 
 ##Customizing
+
+###Shortcodes and variables
+
+There are many shortcode types to use in the plugin;
+
+* Letter shortcodes
+    * Public
+    * Personal
+* Si Widget Shortcodes.
 
 ###Add custom template
 

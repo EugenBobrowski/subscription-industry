@@ -55,8 +55,13 @@ class Subscribtion_Industry_Public
         $this->subscribtion_industry = $subscribtion_industry;
         $this->version = $version;
 
-
+        add_action('init', array($this, 'newsletters'));
         add_action('the_content', array($this, 'subscribtion_content'));
+        add_action('the_content', array($this, 'newsletter_preview'));
+
+        include_once 'class-default-templates.php';
+        Si_Default_Templates::get_instance();
+
     }
 
     public static function get_instance($subscribtion_industry = null, $version = null)
@@ -67,51 +72,64 @@ class Subscribtion_Industry_Public
         return self::$instance;
     }
 
-    /**
-     * Register the stylesheets for the public-facing side of the site.
-     *
-     * @since    1.0.0
-     */
-    public function enqueue_styles()
+    public function newsletters()
     {
+        $labels = array(
+            'name' => _x('Newsletters', 'post type general name', 'your-plugin-textdomain'),
+            'singular_name' => _x('Newsletter', 'post type singular name', 'your-plugin-textdomain'),
+            'menu_name' => _x('Newsletters', 'admin menu', 'your-plugin-textdomain'),
+            'name_admin_bar' => _x('Newsletter', 'add new on admin bar', 'your-plugin-textdomain'),
+            'add_new' => _x('Add New', 'Newsletter', 'your-plugin-textdomain'),
+            'add_new_item' => __('Add New Newsletter', 'your-plugin-textdomain'),
+            'new_item' => __('New Newsletter', 'your-plugin-textdomain'),
+            'edit_item' => __('Edit Newsletter', 'your-plugin-textdomain'),
+            'view_item' => __('Web version', 'your-plugin-textdomain'),
+            'all_items' => __('All Newsletters', 'your-plugin-textdomain'),
+            'search_items' => __('Search Newsletters', 'your-plugin-textdomain'),
+            'parent_item_colon' => __('Parent Newsletters:', 'your-plugin-textdomain'),
+            'not_found' => __('No Newsletters found.', 'your-plugin-textdomain'),
+            'not_found_in_trash' => __('No Newsletters found in Trash.', 'your-plugin-textdomain'),
+        );
 
-        /**
-         * This function is provided for demonstration purposes only.
-         *
-         * An instance of this class should be passed to the run() function
-         * defined in Subscribtion_Industry_Loader as all of the hooks are defined
-         * in that particular class.
-         *
-         * The Subscribtion_Industry_Loader will then create the relationship
-         * between the defined hooks and the functions defined in this
-         * class.
-         */
+        $args = array(
+            'labels' => $labels,
+            'public' => true,
+            'publicly_queryable' => true,
+            'show_ui' => true,
+            'show_in_menu' => true,
+            'query_var' => true,
+            'rewrite' => array('slug' => 'newsletter'),
+            'capability_type' => 'page',
+            'has_archive' => true,
+            'hierarchical' => true,
+            'menu_position' => null,
+            'supports' => array('title', 'page-attributes'),
+        );
+        register_post_type('newsletters', $args);
 
-        wp_enqueue_style($this->subscribtion_industry, plugin_dir_url(__FILE__) . 'css/subscribtion-industry-public.css', array(), $this->version, 'all');
-
+        register_taxonomy(
+            'newsletter_groups',
+            'newsletters',
+            array(
+                'label' => __( 'Groups' ),
+                'rewrite' => array( 'slug' => 'groups' ),
+                'show_ui' => true,
+                'show_admin_column'     => true,
+                'hierarchical' => false,
+            )
+        );
     }
 
-    /**
-     * Register the JavaScript for the public-facing side of the site.
-     *
-     * @since    1.0.0
-     */
-    public function enqueue_scripts()
-    {
+    public function newsletter_preview ($content) {
+        global $post;
 
-        /**
-         * This function is provided for demonstration purposes only.
-         *
-         * An instance of this class should be passed to the run() function
-         * defined in Subscribtion_Industry_Loader as all of the hooks are defined
-         * in that particular class.
-         *
-         * The Subscribtion_Industry_Loader will then create the relationship
-         * between the defined hooks and the functions defined in this
-         * class.
-         */
+        if ('newsletters' != $post->post_type) return $content;
 
-        wp_enqueue_script($this->subscribtion_industry, plugin_dir_url(__FILE__) . 'js/subscribtion-industry-public.js', array('jquery'), $this->version, false);
+        include_once plugin_dir_path(__FILE__) . 'class-templater.php';
+
+        $templater = Si_Templater::get_instance();
+        
+        return $templater->get_newsletter_web($post->ID);
 
     }
 
@@ -173,6 +191,8 @@ class Subscribtion_Industry_Public
         } else {
             return $content;
         }
+        
+        return false;
 
     }
 

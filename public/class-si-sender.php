@@ -10,8 +10,6 @@ class si_sender
 {
     protected static $instance;
 
-    public $letter_shortcodes;
-    public $letter_shortcodes_personal;
     public $subscribers;
     public $subscriber;
     public $headers = array();
@@ -23,13 +21,6 @@ class si_sender
 
     private function __construct()
     {
-        $this->letter_shortcodes_personal = apply_filters('si_letter_shortcodes_personal', array(
-            'subscriber' => array($this, 'shortcode_subscriber'),
-            'confirm' => array($this, 'shortcode_confirm'),
-            'unsubscribe' => array($this, 'shortcode_unsubscribe'),
-        ));
-        $this->letter_shortcodes = apply_filters('si_letter_shortcodes', array());
-
         $this->options = wp_parse_args(get_option('si_options'), array(
             'confirm_page' => 0,
             'email' => '',
@@ -51,8 +42,7 @@ class si_sender
             $this->options['email'] = 'no-reply@' . $sitename;
         }
 
-        
-
+        include_once plugin_dir_path(__FILE__) . 'class-templater.php';
 
     }
     public function get_headers () {
@@ -94,30 +84,21 @@ class si_sender
 
     }
     public function send_newsletter ($post_id) {
-        
-        $templates = apply_filters('si_templates', array());
 
-        $data = get_post_meta($post_id, 'newsletter_data', true);
+        $templater = Si_Templater::get_instance();
         
         $template_name = get_post_meta($post_id, 'newsletter_template', true);
 
-        $template = $templates[$template_name];
-
-        $this->code = $template['body'];
+        $template = $templater->templates[$template_name];
 
         $this->subject = get_the_title($post_id);
 
         $this->letter_type = $template['type'];
 
         $this->get_headers();
-
-        foreach ($template['fields'] as $field_name=>$settings ) {
-            if (is_string($data[$field_name])) {
-                $this->code = str_replace("{{$field_name}}", $data[$field_name], $this->code );
-            }
-            $this->code = apply_filters("si_{$template_name}_template_field_{$field_name}_replacing", $this->code, $settings, $data );
-        }
         
+        $this->code = $templater->get_newsletter($post_id);
+
         if ('html' == $this->letter_type) {
             $this->code = $this->get_simple_html($this->subject, wpautop($this->code));
         }
@@ -130,7 +111,7 @@ class si_sender
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function get_subscribers()
     {
@@ -159,7 +140,6 @@ class si_sender
 
         $this->subscribers = array_merge($subscribers, $this->subscribers);
 
-        
     }
 
     public function send()

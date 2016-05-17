@@ -42,10 +42,6 @@ class Subscribtion_Industry_Admin
     public function __construct($version)
     {
         $this->version = $version;
-        add_action('init', array($this, 'newsletters'));
-        add_filter('si_templates', array($this, 'default_templates'));
-
-
         add_action('load-post.php', array($this, 'load_metabox'));
         add_action('load-post.php', array($this, 'load_metabox_send'));
         add_action('load-post-new.php', array($this, 'load_metabox'));
@@ -80,112 +76,7 @@ class Subscribtion_Industry_Admin
         Sender_Metabox::get_instance($this->version);
     }
 
-    public function newsletters()
-    {
-        $labels = array(
-            'name' => _x('Newsletters', 'post type general name', 'your-plugin-textdomain'),
-            'singular_name' => _x('Newsletter', 'post type singular name', 'your-plugin-textdomain'),
-            'menu_name' => _x('Newsletters', 'admin menu', 'your-plugin-textdomain'),
-            'name_admin_bar' => _x('Newsletter', 'add new on admin bar', 'your-plugin-textdomain'),
-            'add_new' => _x('Add New', 'Newsletter', 'your-plugin-textdomain'),
-            'add_new_item' => __('Add New Newsletter', 'your-plugin-textdomain'),
-            'new_item' => __('New Newsletter', 'your-plugin-textdomain'),
-            'edit_item' => __('Edit Newsletter', 'your-plugin-textdomain'),
-            'view_item' => __('View Newsletter', 'your-plugin-textdomain'),
-            'all_items' => __('All Newsletters', 'your-plugin-textdomain'),
-            'search_items' => __('Search Newsletters', 'your-plugin-textdomain'),
-            'parent_item_colon' => __('Parent Newsletters:', 'your-plugin-textdomain'),
-            'not_found' => __('No Newsletters found.', 'your-plugin-textdomain'),
-            'not_found_in_trash' => __('No Newsletters found in Trash.', 'your-plugin-textdomain'),
-        );
 
-        $args = array(
-            'labels' => $labels,
-            'public' => true,
-            'publicly_queryable' => true,
-            'show_ui' => true,
-            'show_in_menu' => true,
-            'query_var' => true,
-            'rewrite' => array('slug' => 'newsletter'),
-            'capability_type' => 'page',
-            'has_archive' => true,
-            'hierarchical' => true,
-            'menu_position' => null,
-            'supports' => array('title', 'page-attributes'),
-        );
-        register_post_type('newsletters', $args);
-
-        register_taxonomy(
-            'newsletter_groups',
-            'newsletters',
-            array(
-                'label' => __( 'Groups' ),
-                'rewrite' => array( 'slug' => 'groups' ),
-                'show_ui' => true,
-                'show_admin_column'     => true,
-                'hierarchical' => false,
-            )
-        );
-    }
-
-
-    public function default_templates($templates)
-    {
-        return array_merge($templates, array(
-                'default' => array(
-                    'name' => 'Default text',
-                    'describtion' => 'The default text template',
-                    'type' => 'plain',
-                    'preview' => plugin_dir_url(__FILE__) . 'img/email_template_txt.png',
-                    'fields' => array(
-                        'content' => array(
-                            'type' => 'textarea',
-                            'title' => 'Content',
-                        ),
-                    ),
-                    'body' => '{content}'
-                ),
-                'default_html' => array(
-                    'name' => 'Default HTML',
-                    'describtion' => 'The default text template',
-                    'type' => 'html',
-                    'preview' => plugin_dir_url(__FILE__) . 'img/email_template_html.png',
-                    'fields' => array(
-                        'content' => array(
-                            'type' => 'editor',
-                            'title' => 'Content',
-                        ),
-                        'logo' => array(
-                            'type' => 'media',
-                            'title' => 'Logo',
-                        ),
-                        'bg' => array(
-                            'type' => 'color',
-                            'title' => 'Background',
-                        )
-
-                    ),
-                    'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:{bg};font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="{bg}">
-<tr>
-<td></td><td width="600">
-    <img src="{logo}" alt="">
-</td><td></td>
-</tr>
-<tr>
-    <td></td>
-    <td width="600"  style="background-color:#ffffff;" bgcolor="#ffffff" cellpadding="0">
-    {content}
-</td>
-    <td></td>
-</tr>
-<tr>
-<td></td><td width="600"></td><td></td>
-</tr>
-</table>',
-
-                ),
-            )
-        );
-    }
+    
 
 }
