@@ -99,7 +99,7 @@ class Subscribtion_Industry_Public
             'show_in_menu' => true,
             'query_var' => true,
             'rewrite' => array('slug' => 'newsletter'),
-            'capability_type' => 'page',
+            'capability_type' => 'post',
             'has_archive' => true,
             'hierarchical' => true,
             'menu_position' => null,
@@ -138,15 +138,6 @@ class Subscribtion_Industry_Public
         include_once 'widget-subscribe.php';
         register_widget('SI_Subscribe_Widget');
     }
-
-    public function update_subscriber($data, $where)
-    {
-        global $wpdb;
-
-        return $wpdb->update($wpdb->prefix . 'si_subscribers', $data, $where);
-
-    }
-
 
     public function subscribtion_content($content)
     {

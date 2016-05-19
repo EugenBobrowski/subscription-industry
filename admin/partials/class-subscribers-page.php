@@ -53,6 +53,7 @@ class Subscribers_Page
     private function __construct($version)
     {
         $this->version = $version;
+        include_once plugin_dir_path(__FILE__) . '../class-subscribers-model.php';
         
         add_action('admin_menu', array($this, 'subscribers_page'));
     }
@@ -116,12 +117,21 @@ class Subscribers_Page
                     return 'load_edit_view';
                 }
                 break;
+            case 'import':
+                if (isset($_POST['action']) && 'doimport' == $_POST['action']) {
+
+                } else {
+                    include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
+                    add_action('admin_enqueue_scripts', array($this, 'assets'));
+                    return 'load_import_view';
+                }
+                break;
             default:
                 return 'load_default_view';
         }
     }
-    public function assets() {
-        AtfHtmlHelper::assets(null);
+    public function assets($prefix) {
+        AtfHtmlHelper::assets($prefix, null);
     }
 
 
@@ -147,21 +157,29 @@ class Subscribers_Page
     public function do_edit()
     {
 
-        //ToDO: use confirmation by nonce
+        //ToDo: use confirmation by nonce
+
+
+        $subscriber_id = intval($_POST['id']);
         $name = sanitize_text_field($_POST['name']);
         $email = sanitize_email($_POST['email']);
+        $groups = array_map('intval', $_POST['groups']);
 
-        $plugin_public = Subscribtion_Industry_Public::get_instance();
 
-        if (empty($_POST['id'])) {
-            $plugin_public->insert_subscriber($email, $name, empty($_POST['confirm']));
+        $model = Subscribers_Model::get_instance();
+        
+        if (empty($subscriber_id)) {
+            $subscriber_id = $model->insert_subscriber($email, $name, empty($_POST['confirm']));
+
+            $model->set_subscriber_group($subscriber_id, $groups);
+
         } else {
             $data = array(
                 'name' => $name,
                 'email' => $email,
             );
             $where = array(
-                'id' => intval($_POST['id']),
+                'id' => $subscriber_id,
             );
             if (!$_POST['confirm']) {
                 $data['status'] = 0;
@@ -169,8 +187,9 @@ class Subscribers_Page
                 $data['status'] = 1;
             }
 
-
-            $plugin_public->update_subscriber($data, $where);
+            $model->update_subscriber($data, $where);
+            
+            $model->set_subscriber_group($subscriber_id, $groups);
         }
 
 
@@ -198,10 +217,13 @@ class Subscribers_Page
 
     public function load_edit_view()
     {
+
+
         $data = array(
             'id' => '',
             'name' => '',
             'email' => '',
+            'groups' => '',
             'status' => '',
         );
 
@@ -240,6 +262,17 @@ class Subscribers_Page
                     <th scope="row"><label for="email">Email <span class="description">(required)</span></label></th>
                     <td><?php AtfHtmlHelper::text(array('id' => 'email', 'name' => 'email', 'value' => $data['email'])); ?></td>
                 </tr>
+                <tr class="form-required">
+                    <th scope="row"><label for="groups">Groups</label></th>
+                    <td>
+                    <?php
+                    $model = Subscribers_Model::get_instance();
+                    AtfHtmlHelper::multiselect(array('id' => 'groups', 'name' => 'groups',
+                    'value' => $model->get_subscriber_group($data['id']),
+                    'options' => AtfHtmlHelper::get_taxonomy_options(array('taxonomy' => 'newsletter_groups'))
+                    )); ?>
+                    </td>
+                </tr>
                 <tr class="form-field form-required">
                     <th scope="row"><label>Confirm</label></th>
                     <td><?php AtfHtmlHelper::tumbler(array('id' => 'confirm', 'name' => 'confirm', 'value' => $data['status'])); ?></td>
@@ -249,6 +282,47 @@ class Subscribers_Page
             <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary"
                                      value="Submit"></p>
         </form>
+
+        <?php
+        return true;
+    }
+    public function load_import_view()
+    {
+
+        ?>
+        <div class="wrap">
+
+
+        <h2><?php _e('Import Subscribers', 'si');
+            ?></h2>
+
+        <form method="post">
+            <input type="hidden" name="action" value="doedit"/>
+            <table class="form-table atf-fields">
+                <tr class="form-required">
+                    <th scope="row"><label for="name"><?php _e('Import text'); ?></label></th>
+                    <td><input type="file" name="subscribers_base" multiple accept="text/*"></td>
+                </tr>
+                <tr class="form-required">
+                    <th scope="row"><label for="name"><?php _e('Import text'); ?></label></th>
+                    <td><?php AtfHtmlHelper::textarea(array(
+                    'id' => 'import_text',
+                    'name' => 'import_text',
+                    'value' => '',
+                    'desc' => __('', 'si'),
+                    )); ?></td>
+                </tr>
+                <tr class="form-field form-required">
+                    <th scope="row"><label>Confirm</label></th>
+                    <td><?php AtfHtmlHelper::tumbler(array('id' => 'confirm', 'name' => 'confirm', 'value' => 1)); ?></td>
+                </tr>
+            </table>
+
+
+            <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary"
+                                     value="Submit"></p>
+        </form>
+</div>
 
         <?php
         return true;
@@ -263,10 +337,9 @@ class Subscribers_Page
         if (isset($_GET['order'])) $order = $_GET['order'];
         else $order = 'asc';
 
-        include_once plugin_dir_path(__FILE__) . '../class-subscribers-model.php';
-        $subscribers_model = Subscribers_Model::get_instance();
+        $model = Subscribers_Model::get_instance();
 
-        $subscribers = $subscribers_model->get_subscribers(array('orderby' => $orderby, 'order' => $order));
+        $subscribers = $model->get_subscribers(array('orderby' => $orderby, 'order' => $order));
 
 
         include plugin_dir_path(__FILE__) . 'subscribers_views/default.php';

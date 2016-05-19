@@ -316,7 +316,7 @@ class SI_Subscribe_Widget extends WP_Widget {
 
         if (!empty(intval($insert))) {
             include_once plugin_dir_path(__FILE__) . '../public/class-si-sender.php';
-            $sender = si_sender::get_instance();
+            $sender = Si_Sender::get_instance();
             $sender->send_confirmation_letter($insert);
             $message_id = 'success';
         } else {

@@ -9,8 +9,8 @@ class Si_Default_Templates
     {
 
         add_filter('si_templates', array($this, 'default_templates'));
-        add_filter('si_template_web_default_field_content', array($this, 'template_web_default_field_content'), 10, 2);
-        add_filter('si_template_default_html_field_content', array($this, 'template_default_html_field_content'), 10, 2);
+        add_filter('si_template_default_field_content_stringify_web', 'wpautop', 10);
+        add_filter('si_template_default_html_field_content', 'wpautop', 10);
 
     }
 
@@ -79,18 +79,6 @@ class Si_Default_Templates
                 ),
             )
         );
-    }
-    public function template_web_default_field_content ($newsletter, $data) {
-        if (is_string($data['content'])) {
-            $newsletter = str_replace("{content}", wpautop($data['content']), $newsletter);
-        }
-        return $newsletter;
-    }
-    public function template_default_html_field_content($newsletter, $data) {
-        if (is_string($data['content'])) {
-            $newsletter = str_replace("{content}", wpautop($data['content']), $newsletter);
-        }
-        return $newsletter;
     }
 
 }

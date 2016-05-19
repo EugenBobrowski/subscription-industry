@@ -13,16 +13,23 @@ class Si_Templater
     public $templates;
     public $letter_shortcodes;
     public $letter_shortcodes_personal;
-    public $subscribers;
     public $subscriber;
-    public $headers = array();
-    public $code;
     public $options;
     public $charset = 'UTF-8';
     public $letter_type = 'plain';
 
     private function __construct()
     {
+        $this->options = wp_parse_args(get_option('si_options'), array(
+            'confirm_page' => 0,
+            'email' => '',
+            'confirm_request_content' => 'Dear [subscriber]' . PHP_EOL .
+                PHP_EOL .
+                'Your e-mail address was subscribed to our site.' . PHP_EOL .
+                'To confirm please go this link [confirm]confirm[/confirm]',
+            'confirm_letter_type' => 'plain',
+        ));
+        
         $this->templates = apply_filters('si_templates', array());
 
         $this->letter_shortcodes_personal = apply_filters('si_letter_shortcodes_personal', array(
@@ -45,15 +52,13 @@ class Si_Templater
 
         foreach ($template['fields'] as $field_name => $settings) {
 
-            $newsletter = apply_filters("si_template_{$template['id']}_field_{$field_name}", 
-                $newsletter, 
-                $data, 
-                $template);
-            $newsletter = apply_filters("si_template_web_{$template['id']}_field_{$field_name}", 
-                $newsletter, 
-                $data, 
-                $template);
-
+            $data[$field_name] = apply_filters("si_template_{$template['id']}_field_{$field_name}_stringify",
+                is_string($data[$field_name]) ? $data[$field_name] : '',
+                $data[$field_name]);
+            $data[$field_name] = apply_filters("si_template_{$template['id']}_field_{$field_name}_stringify_web",
+                is_string($data[$field_name]) ? $data[$field_name] : '',
+                $data[$field_name]);
+            
             if (is_string($data[$field_name])) {
                 $newsletter = str_replace("{{$field_name}}", $data[$field_name], $newsletter);
             }
@@ -76,19 +81,20 @@ class Si_Templater
 
         if ($template == null) $template = $this->get_template($post_id);
 
+        $this->letter_type = $template['type'];
+
         $newsletter = $template['body'];
 
         foreach ($template['fields'] as $field_name => $settings) {
 
-            $newsletter = apply_filters("si_template_{$template['id']}_field_{$field_name}", 
-                $newsletter, 
-                $data, 
-                $template);
-            
+            $data[$field_name] = apply_filters("si_template_{$template['id']}_field_{$field_name}_stringify",
+                is_string($data[$field_name]) ? $data[$field_name] : '',
+                $data[$field_name]);
+
             if (is_string($data[$field_name])) {
                 $newsletter = str_replace("{{$field_name}}", $data[$field_name], $newsletter);
             }
-            
+
         }
 
         $newsletter = apply_filters("si_template_all", $newsletter, $template, $data);
@@ -165,7 +171,7 @@ class Si_Templater
         return $this->subscriber['name'];
     }
 
-    public function shortcode_confirm($attr, $content)
+    public function shortcode_confirm($attr = array(), $content)
     {
         $confirm_link = add_query_arg(array(
             'hash' => hash('md5', $this->subscriber['activation_key']),
@@ -178,7 +184,7 @@ class Si_Templater
         else return $confirm_link;
     }
 
-    public function shortcode_unsubscribe($attr, $content)
+    public function shortcode_unsubscribe($attr = array(), $content)
     {
         $subscribe_link = add_query_arg(array(
             'hash' => hash('md5', $this->subscriber['activation_key']),
@@ -191,7 +197,7 @@ class Si_Templater
         else return $subscribe_link;
     }
 
-    public function get_simple_html($title, $body)
+    public static function get_simple_html($title, $body)
     {
         $message = "<html>
 <head>

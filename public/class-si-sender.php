@@ -6,7 +6,7 @@
  * Date: 4/15/16
  * Time: 12:50 PM
  */
-class si_sender
+class Si_Sender
 {
     protected static $instance;
 
@@ -32,7 +32,6 @@ class si_sender
         ));
         if (empty($this->options['confirm_page'])) {
             get_pages();
-
         }
         if (empty($this->options['email'])) {
             $sitename = strtolower($_SERVER['SERVER_NAME']);
@@ -63,7 +62,7 @@ class si_sender
 
         if ('html' == $this->letter_type) {
             
-            $this->code = $this->get_simple_html($this->subject, apply_filters('si_confirmation_letter_html', wpautop($this->options['confirm_request_content'])));
+            $this->code = Si_Templater::get_simple_html($this->subject, apply_filters('si_confirmation_letter_html', wpautop($this->options['confirm_request_content'])));
         } else {
             $this->code = $this->options['confirm_request_content'];
         }
@@ -100,7 +99,7 @@ class si_sender
         $this->code = $templater->get_newsletter($post_id);
 
         if ('html' == $this->letter_type) {
-            $this->code = $this->get_simple_html($this->subject, wpautop($this->code));
+            $this->code = Si_Templater::get_simple_html($this->subject, $this->code);
         }
 
 
@@ -144,11 +143,13 @@ class si_sender
 
     public function send()
     {
+        $templater = Si_Templater::get_instance();
+        $templater->options = $this->options;
         
-        $this->code = $this->letter_shortcodes($this->code);
+        $this->code = $templater->letter_shortcodes($this->code);
         $receivers = array();
         foreach ($this->subscribers as $subscriber) {
-            $this->subscriber = $subscriber;
+            $templater->subscriber = $subscriber;
             if (empty($subscriber['name'])) {
                 $this->headers['To'] = $subscriber['email'];
             } else {
@@ -156,7 +157,9 @@ class si_sender
             }
             
             $name = (empty($name)) ? 'Subscriber' : $name;
-            $message = $this->letter_shortcodes_personal($this->code);
+            $message = $templater->letter_shortcodes_personal($this->code);
+
+            wp_die(var_export($message));
 
             wp_mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
             
@@ -169,125 +172,6 @@ class si_sender
 
         $subscribers_model->update_last_send($receivers);
         
-    }
-    
-
-    public function letter_shortcodes($code)
-    {
-
-        $pattern = get_shortcode_regex(array_keys($this->letter_shortcodes));
-
-        $code = preg_replace_callback("/$pattern/", array($this, 'do_shortcode_tag_all'), $code);
-
-        return $code;
-    }
-
-    public function letter_shortcodes_personal($code)
-    {
-
-        $pattern = get_shortcode_regex(array_keys($this->letter_shortcodes_personal));
-
-        $code = preg_replace_callback("/$pattern/", array($this, 'do_shortcode_tag_personal'), $code);
-
-        return $code;
-    }
-
-    /**
-     * Clone of do_shortcode_tag()
-     * Regular Expression callable for form_shortcode() for calling shortcode hook.
-     * @see get_shortcode_regex for details of the match array contents.
-     *
-     * @since 2.5.0
-     * @access private
-     *
-     * @global array $shortcode_tags
-     *
-     * @param array $m Regular expression match array
-     * @return string|false False on failure.
-     */
-    public function do_shortcode_tag_all($m)
-    {
-        $shortcode_tags = $this->letter_shortcodes;
-        return $this->do_shortcode_tag($m, $shortcode_tags);
-    }
-
-    public function do_shortcode_tag_personal($m)
-    {
-        $shortcode_tags = $this->letter_shortcodes_personal;
-        return $this->do_shortcode_tag($m, $shortcode_tags);
-    }
-
-    public function do_shortcode_tag($m, $shortcode_tags)
-    {
-        // allow [[foo]] syntax for escaping a tag
-        if ($m[1] == '[' && $m[6] == ']') {
-            return substr($m[0], 1, -1);
-        }
-
-        $tag = $m[2];
-        $attr = shortcode_parse_atts($m[3]);
-
-        if (!is_callable($shortcode_tags[$tag])) {
-            /* translators: %s: shortcode tag */
-            $message = sprintf(__('Attempting to parse a shortcode without a valid callback: %s'), $tag);
-            _doing_it_wrong(__FUNCTION__, $message, '4.3.0');
-
-            return $m[0];
-        }
-
-        if (isset($m[5])) {
-            // enclosing tag - extra parameter
-            return $m[1] . call_user_func($shortcode_tags[$tag], $attr, $m[5], $tag) . $m[6];
-        } else {
-            // self-closing tag
-            return $m[1] . call_user_func($shortcode_tags[$tag], $attr, null, $tag) . $m[6];
-        }
-
-    }
-
-    public function shortcode_subscriber($attr)
-    {
-        if (empty($this->subscriber['name'])) return 'Subscriber';
-        return $this->subscriber['name'];
-    }
-
-    public function shortcode_confirm($attr, $content)
-    {
-        $confirm_link = add_query_arg(array(
-            'hash' => hash('md5', $this->subscriber['activation_key']),
-            'action' => 'confirm',
-            'email' => $this->subscriber['email'],
-        ), get_permalink($this->options['confirm_page']));
-
-        if ('html' == $this->letter_type && null == $content) return '<a href="' . $confirm_link . '" title="confirm">confirm</a>';
-        elseif ('html' == $this->letter_type) return '<a href="' . $confirm_link . '" title="confirm">' . $content . '</a>';
-        else return $confirm_link;
-    }
-
-    public function shortcode_unsubscribe($attr, $content)
-    {
-        $subscribe_link = add_query_arg(array(
-            'hash' => hash('md5', $this->subscriber['activation_key']),
-            'action' => 'unsubscribe',
-            'email' => $this->subscriber['email'],
-        ), get_permalink($this->options['confirm_page']));
-
-        if ('html' == $this->letter_type && null == $content) return '<a href="' . $subscribe_link . '" title="confirm">' . __('Unsubscribe', 'subscribtion-industry') . '</a>';
-        elseif ('html' == $this->letter_type) return '<a href="' . $subscribe_link . '" title="confirm">' . $content . '</a>';
-        else return $subscribe_link;
-    }
-
-    public function get_simple_html($title, $body)
-    {
-        $message = "<html>
-<head>
-  <title>{$title}</title>
-</head>
-<body>
-  {$body}
-</body>
-</html>";
-        return $message;
     }
 
     public static function get_instance()

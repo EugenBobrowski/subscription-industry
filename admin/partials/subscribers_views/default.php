@@ -30,6 +30,8 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
 
     <h2><?php echo esc_html(get_admin_page_title()); ?>
         <a href="<?php echo add_query_arg(array('action' => 'edit')); ?>" class="page-title-action">Add New</a>
+        <a href="<?php echo add_query_arg(array('action' => 'import')); ?>" class="page-title-action">Import</a>
+        <a href="<?php echo add_query_arg(array('action' => 'export')); ?>" class="page-title-action">Export</a>
         <span class="others-parts" style="float: right; margin-right: -15px;">
             <a href="<?php echo admin_url('edit.php?post_type=newsletters'); ?>" class="page-title-action">Newsletters</a>
             <a href="<?php echo admin_url('options-general.php?page=si-options'); ?>" class="page-title-action">Options</a>
@@ -55,6 +57,7 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                 <?php echo !($orderby == 'email' && $order == 'asc') ? 'desc' : 'asc' ?>"><a
                         href="<?php echo $link_sort_by_email; ?>"><span>Email</span><span
                             class="sorting-indicator"></span></a></th>
+                <th scope="col" class="manage-column column-group"><span>Group</span></th>
                 <th scope="col" class="manage-column column-status sortable
                 <?php echo ($orderby == 'status') ? 'sorted' : 'sortable' ?>
                 <?php echo !($orderby == 'status' && $order == 'asc') ? 'desc' : 'asc' ?>" style="width: 10em;"><a
@@ -116,8 +119,20 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                     <td class="email column-email"><a
                             href="mailto:<?php echo $subscriber->email; ?>"><?php echo $subscriber->email; ?></a>
                     </td>
+                    <td class="group column-group">
+                        <?php
+                        $groups = $model->get_subscriber_group($subscriber->id, false);
+
+                        $links = array();
+                        foreach ($groups as $group) {
+                            $links[] = '<a href="'.add_query_arg(array('group' => $group->term_id)).'">'.$group->name.'</a>';
+                        }
+                        echo implode(', ', $links);
+
+                        ?>
+                    </td>
                     <td class="status column-status" data-colname="Status" style="width: 10em;">
-                        <?php echo ($subscriber->status) ? '<strong style="color: #46b450">Confirmed</strong>' : '<strong style="color: #be3631;">Unconfirmed</strong>'; ?>
+                        <?php echo ($subscriber->status) ? '<strong style="color: #0A8A45">Confirmed</strong>' : '<strong style="color: #DC350C;">Unconfirmed</strong>'; ?>
                     </td>
                     <td class="last-send column-date" data-colname="Last Send">
                         <?php echo mysql2date('Y/m/d H:i:s', $subscriber->last_send); ?>
@@ -143,6 +158,7 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                 <?php echo !($orderby == 'email' && $order == 'asc') ? 'desc' : 'asc' ?>"><a
                         href="<?php echo $link_sort_by_email; ?>"><span>Email</span><span
                             class="sorting-indicator"></span></a></th>
+                <th scope="col" class="manage-column column-group"><span>Group</span></th>
                 <th scope="col" class="manage-column column-status sortable
                 <?php echo ($orderby == 'status') ? 'sorted' : 'sortable' ?>
                 <?php echo !($orderby == 'status' && $order == 'asc') ? 'desc' : 'asc' ?>" style="width: 10em;"><a
