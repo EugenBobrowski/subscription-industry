@@ -75,11 +75,14 @@ function add_my_templates ($templates) {
 The Subscribtion Industry plugin provide your subscribe form be ever so custom as you would like. 
 
 Just insert the html code in textarea of widget using the SI Form shortcodes:
- 
+
+ * `[form]` Not required. Use it if you need to save your DOM for styles.
  * `[email]` E-mail input. Required. 
 	+ `type` type text
 	+ `class` 
  * `[name]` Name of subscriber. Optional
+ * `[group]`
+    + `type` Type of field. Available: `hidden`,
  * `[submit]` or `[button]`. Optional. But really recomended.
  
  You can add your own shortcode. Use `si_form_shortcodes` filter to add your callback function.

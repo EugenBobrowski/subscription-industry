@@ -1,1 +1,1 @@
-#side-sortables .form-table tr{display:block}#side-sortables .form-table tr th,#side-sortables .form-table tr td{display:block;padding:10px 0}
+#side-sortables .form-table{width:100%}#side-sortables .form-table tr{display:block}#side-sortables .form-table tr th,#side-sortables .form-table tr td{display:block;padding:10px 0;width:100%}#side-sortables .form-table tr th select,#side-sortables .form-table tr td select{width:100%}

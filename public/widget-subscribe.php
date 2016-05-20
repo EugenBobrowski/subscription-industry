@@ -42,9 +42,10 @@ class SI_Subscribe_Widget extends WP_Widget {
             'form' => array($this, 'shortcode_form'),
             'email' => array($this, 'shortcode_email'),
             'name' => array($this, 'shortcode_name'),
+            'group' => array($this, 'shortcode_group'),
             'submit'  => array($this, 'shortcode_submit'),
             'button' => array($this, 'shortcode_button'),
-            'message' => array($this, 'shortcode_message'),
+            
         ) );
 
         $this->pattern = get_shortcode_regex( array_keys( $this->si_widget_shortcodes ) );
@@ -64,6 +65,29 @@ class SI_Subscribe_Widget extends WP_Widget {
         /** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
+        echo $args['before_widget'];
+
+        if ( ! empty( $title ) ) {
+            echo $args['before_title'] . $title . $args['after_title'];
+        }
+        function microtime_float()
+        {
+            list($usec, $sec) = explode(" ", microtime());
+            return ((float)$usec + (float)$sec);
+        }
+
+        $time_start = microtime_float();
+var_dump($instance['html']);
+        echo (empty($instance['html'])) ? $this->html($instance) : $instance['html'];
+
+        echo $args['after_widget'];
+
+        $time_end = microtime_float();
+        $time = $time_end - $time_start;
+
+        echo "Ничего не делал $time секунд\n";
+    }
+    public function html ($instance) {
         $code = ! empty( $instance['code'] ) ? $instance['code'] : '';
 
         /**
@@ -79,20 +103,15 @@ class SI_Subscribe_Widget extends WP_Widget {
 //        $code = apply_filters( 'widget_text', $code, $instance, $this );
         $code = apply_filters( 'si_form_code', $code, $instance, $this );
 
-
-        echo $args['before_widget'];
-
-        if ( ! empty( $title ) ) {
-            echo $args['before_title'] . $title . $args['after_title'];
-        }
-
         $code = !empty( $instance['filter'] ) ? wpautop( $code ) : $code;
 
-        if (in_array('form', $this->used_tags)) echo '<div class="si-widget-content">' . $code . '</div>';
-        else echo '<form class="si-widget-content si-widget-form">' . $code . '</form>';
+        if (in_array('form', $this->used_tags)) $code = '<div class="si-widget-content">' . $code . '</div>';
+        else $code = '<form class="si-widget-content si-widget-form">' . $code . '</form>';
 
-        echo $args['after_widget'];
+        return $code;
     }
+
+
     public function form_shortcodes ($code) {
 
         $output = preg_replace_callback( "/$this->pattern/", array($this, 'do_shortcode_tag'), $code );
@@ -176,6 +195,38 @@ class SI_Subscribe_Widget extends WP_Widget {
 
         return '<input name="name" type="text"' . $attributes . '>';
     }
+    public function shortcode_group ($attr) {
+        $attributes = '';
+        $attr = wp_parse_args($attr, array(
+            'type' => 'hidden'
+
+        ));
+        $c_attrs = $attr;
+        $groups = array();
+        unset($c_attrs['type']);
+        foreach ($c_attrs as $attribute=>$value) {
+            if (is_string($attribute)) $attributes .= $attribute . '="' . $value . '" ';
+            else if ($term = get_term_by('slug', $value, 'newsletter_groups')) $groups[] = $term->term_id;
+        }
+
+        $html = '';
+
+        switch ($attr['type']) {
+            case 'select':
+                break;
+            case 'multiselect':
+                break;
+            case 'checkbox':
+                break;
+            default:
+                foreach ($groups as $group) {
+                    $html .= '<input name="groups" type="hidden"' . $attributes . ' value="' . $group . '">';
+                }
+                break;
+        }
+
+        return $html;
+    }
     public function shortcode_submit ($attr) {
         $attributes = '';
         $attr = wp_parse_args($attr, array(
@@ -188,7 +239,7 @@ class SI_Subscribe_Widget extends WP_Widget {
         return '<input type="submit" ' . $attributes . '>';
     }
 
-    public function shortcode_message ($attr, $content) {
+    public function shortcode_button ($attr, $content) {
         $attributes = '';
         foreach ($attr as $attribute=>$value) {
             $attributes .= $attribute . '="' . $value . '" ';
@@ -351,6 +402,7 @@ class SI_Subscribe_Widget extends WP_Widget {
         else
             $instance['code'] = wp_kses_post( stripslashes( $new_instance['code'] ) );
         $instance['filter'] = ! empty( $new_instance['filter'] );
+
         return $instance;
     }
 

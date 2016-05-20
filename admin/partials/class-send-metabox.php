@@ -63,12 +63,31 @@ class Sender_Metabox
             $subscribers_opts[$subscriber->id] = $subscriber->name . ' [' . $subscriber->email . ']';
         }
 
+
+        $groups = wp_get_post_terms($post->ID, 'newsletter_groups',  array("fields" => "ids"));
+        
         wp_nonce_field(plugin_basename(__FILE__), 'newsletter_send_nonce');
 
         ?>
 
         <table class="form-table atf-fields">
             <tbody>
+            <tr>
+                <th scope="row">
+                    <label for="favicon">Send to groups:</label>
+                </th>
+                <td>
+                    <?php AtfHtmlHelper::multiselect(array(
+                        'id' => 'groups',
+                        'name' => 'groups',
+                        'value' => $groups,
+                        'class' => 'check-buttons',
+                        'vertical' => false,
+                        'options' => AtfHtmlHelper::get_taxonomy_options('newsletter_groups'),
+                    )); ?>
+
+                </td>
+            </tr>
             <tr>
                 <th scope="row">
                     <label for="favicon">Send to subscribers:</label>
@@ -105,7 +124,14 @@ class Sender_Metabox
 
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             return $post_id;
-        
+
+        $groups = array();
+
+        if (isset($_POST['groups'])) $groups = array_map('intval', $_POST['groups']);
+
+        wp_set_object_terms($post_id, $groups, 'newsletter_groups');
+
+
         if (isset($_POST['receivers']) && is_array($_POST['receivers'])) {
             $receivers = array();
             foreach ($_POST['receivers'] as $key => $receiver) {
