@@ -14,7 +14,7 @@
  *
  * @see WP_Widget
  */
-class SI_Subscribe_Widget extends WP_Widget {
+class Si_Subscribe_Widget extends WP_Widget {
 
 
     public $used_tags = array();
@@ -45,7 +45,6 @@ class SI_Subscribe_Widget extends WP_Widget {
             'group' => array($this, 'shortcode_group'),
             'submit'  => array($this, 'shortcode_submit'),
             'button' => array($this, 'shortcode_button'),
-            
         ) );
 
         $this->pattern = get_shortcode_regex( array_keys( $this->si_widget_shortcodes ) );
@@ -70,22 +69,11 @@ class SI_Subscribe_Widget extends WP_Widget {
         if ( ! empty( $title ) ) {
             echo $args['before_title'] . $title . $args['after_title'];
         }
-        function microtime_float()
-        {
-            list($usec, $sec) = explode(" ", microtime());
-            return ((float)$usec + (float)$sec);
-        }
 
-        $time_start = microtime_float();
-var_dump($instance['html']);
         echo (empty($instance['html'])) ? $this->html($instance) : $instance['html'];
 
         echo $args['after_widget'];
 
-        $time_end = microtime_float();
-        $time = $time_end - $time_start;
-
-        echo "Ничего не делал $time секунд\n";
     }
     public function html ($instance) {
         $code = ! empty( $instance['code'] ) ? $instance['code'] : '';
@@ -220,7 +208,7 @@ var_dump($instance['html']);
                 break;
             default:
                 foreach ($groups as $group) {
-                    $html .= '<input name="groups" type="hidden"' . $attributes . ' value="' . $group . '">';
+                    $html .= '<input name="groups[]" type="hidden"' . $attributes . ' value="' . $group . '">';
                 }
                 break;
         }
@@ -272,7 +260,7 @@ var_dump($instance['html']);
                 var siSubscribeForms;
                 $(document).ready(function ($) {
                     siSubscribeForms = $('.si-widget-form');
-                    console.log(siFormAjax.callmessage);
+                    console.log(siFormAjax.messages);
 
                     var do_ajax = function (data) {
                         if (typeof data == 'undefined') {
@@ -359,13 +347,22 @@ var_dump($instance['html']);
 
         include_once plugin_dir_path(__FILE__) . '../admin/class-subscribers-model.php';
 
-
-
         $subscribers_model = Subscribers_Model::get_instance();
 
         $insert = $subscribers_model->insert_subscriber($email, $name);
 
         if (!empty(intval($insert))) {
+
+            if (isset($_POST['groups'])) {
+                $groups = array();
+
+                foreach (array_map('absint', explode( ',', trim( $_POST['groups'], " \n\t\r\0\x0B," ) )) as $group_id) {
+                    if (term_exists($group_id, 'newsletter_groups')) $groups[] = $group_id;
+                }
+
+                $subscribers_model->set_subscriber_group($insert, $groups, true);
+            }
+
             include_once plugin_dir_path(__FILE__) . '../public/class-si-sender.php';
             $sender = Si_Sender::get_instance();
             $sender->send_confirmation_letter($insert);

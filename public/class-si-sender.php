@@ -159,8 +159,6 @@ class Si_Sender
             $name = (empty($name)) ? 'Subscriber' : $name;
             $message = $templater->letter_shortcodes_personal($this->code);
 
-            wp_die(var_export($message));
-
             wp_mail($subscriber['email'], $this->subject, $message, implode("\r\n", $this->headers));
             
             $receivers[] = $subscriber['id'];
