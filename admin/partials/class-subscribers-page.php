@@ -218,7 +218,6 @@ class Subscribers_Page
     public function load_edit_view()
     {
 
-
         $data = array(
             'id' => '',
             'name' => '',
@@ -228,17 +227,22 @@ class Subscribers_Page
         );
 
         if (isset($_GET['subscriber'])) {
-            $subscriber = intval($_GET['subscriber']);
+            $subscriber = absint($_GET['subscriber']);
 
             global $wpdb;
 
             $select = 'SELECT * FROM ' . $wpdb->prefix . 'si_subscribers WHERE id IN (' . $subscriber . ');';
             $subscriber = $wpdb->get_results($select, ARRAY_A);
+            $model = Subscribers_Model::get_instance();
 
             $data = wp_parse_args($subscriber[0], $data);
 
+            $data['groups'] = $model->get_subscriber_group($data['id']);
+
+
         } else {
             $subscriber = null;
+
         }
 
         ?>
@@ -259,22 +263,22 @@ class Subscribers_Page
                     <td><?php AtfHtmlHelper::text(array('id' => 'name', 'name' => 'name', 'value' => $data['name'])); ?></td>
                 </tr>
                 <tr class="form-required">
-                    <th scope="row"><label for="email">Email <span class="description">(required)</span></label></th>
+                    <th scope="row"><label for="email"><?php _e('Email <span class="description">(required)</span>'); ?></label></th>
                     <td><?php AtfHtmlHelper::text(array('id' => 'email', 'name' => 'email', 'value' => $data['email'])); ?></td>
                 </tr>
                 <tr class="form-required">
-                    <th scope="row"><label for="groups">Groups</label></th>
+                    <th scope="row"><label for="groups"><?php _e('Groups'); ?></label></th>
                     <td>
                     <?php
-                    $model = Subscribers_Model::get_instance();
+
                     AtfHtmlHelper::multiselect(array('id' => 'groups', 'name' => 'groups',
-                    'value' => $model->get_subscriber_group($data['id']),
+                    'value' => $data['groups'],
                     'options' => AtfHtmlHelper::get_taxonomy_options(array('taxonomy' => 'newsletter_groups'))
                     )); ?>
                     </td>
                 </tr>
                 <tr class="form-field form-required">
-                    <th scope="row"><label>Confirm</label></th>
+                    <th scope="row"><label><?php _e('Confirm'); ?></label></th>
                     <td><?php AtfHtmlHelper::tumbler(array('id' => 'confirm', 'name' => 'confirm', 'value' => $data['status'])); ?></td>
                 </tr>
             </table>

@@ -62,17 +62,17 @@ class Si_Default_Templates
                     ),
                     'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:{bg};font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="{bg}">
 <tr>
-<td></td><td width="600">
-    <img src="{logo}" alt="">
-</td><td></td>
+<td style="padding:15px;"></td><td style="padding:15px;" width="600">
+    <img src="{logo}" alt="" height="70" style="" />
+</td><td style="padding:15px;"></td>
 </tr>
 <tr>
-    <td></td>
-    <td width="600"  style="background-color:#ffffff;" bgcolor="#ffffff" cellpadding="0">{content}</td>
-    <td></td>
+    <td style="padding:15px;"></td>
+    <td width="600"  style="background-color:#ffffff;padding:15px;" bgcolor="#ffffff" cellpadding="0">{content}</td>
+    <td style="padding:15px;"></td>
 </tr>
 <tr>
-<td></td><td width="600"></td><td></td>
+<td style="padding:15px;"></td><td width="600"></td><td style="padding:15px;"></td>
 </tr>
 </table>',
 

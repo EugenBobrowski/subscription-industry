@@ -48,6 +48,30 @@ if (!class_exists('Subscribers_Model')) {
 
         }
 
+        public function get_groups_subscribers ($groups_ids, $confirmed = 1, $full = false, $output = OBJECT) {
+
+            if ($full) {
+                $select = '';
+            }
+            else {
+                $select = 'subscriber_id';
+                $output = ARRAY_N;
+            }
+
+            if ($confirmed === null) $where_confirmed = "";
+            else $where_confirmed = $this->table_subscribers . '.status=' . intval($confirmed == true);
+
+            $groups_ids = implode(', ', $groups_ids);
+
+            $sql = "SELECT {$select} FROM {$this->table_groups} INNER JOIN {$this->table_subscribers} 
+              ON {$this->table_groups}.subscriber_id = {$this->table_subscribers}.id 
+              WHERE {$this->table_groups}.term_taxonomy_id IN ({$groups_ids}) AND {$where_confirmed} ;";
+
+            global $wpdb;
+
+            return $wpdb->get_results($sql, $output);
+        }
+
         public function unsubscribe($email, $hash)
         {
             global $wpdb;

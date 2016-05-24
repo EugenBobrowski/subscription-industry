@@ -40,6 +40,7 @@ class Sender_Metabox
     public function newsletter_metabox()
     {
         add_meta_box('sender_metabox', __('Sending', 'subsribtion-industry'), array($this, 'newsletter_metabox_callback'), 'newsletters', 'side', 'high');
+        remove_meta_box( 'tagsdiv-newsletter_groups', 'newsletters', 'side' );
     }
 
     public function newsletter_metabox_callback($post)
@@ -90,7 +91,7 @@ class Sender_Metabox
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="favicon">Send to subscribers:</label>
+                    <label for="favicon">Send to subscribers too:</label>
                 </th>
                 <td>
                     <?php AtfHtmlHelper::multiselect(array(
@@ -107,6 +108,21 @@ class Sender_Metabox
             </tbody>
         </table>
 
+
+        <div class="si-sender-metabox-actions atf-fields">
+            <div class="statistic-info">
+                Send now
+            </div>
+            <div class="send-action">
+                <?php AtfHtmlHelper::tumbler(array(
+                    'id' => 'send_now',
+                    'name' => 'send_now',
+                    'value' => false,
+                )); ?>
+            </div>
+            <div class="clear"></div>
+        </div>
+
         <?php
 
 
@@ -114,8 +130,6 @@ class Sender_Metabox
 
     public function newsletter_send($post_id)
     {
-
-
         if (!isset($_POST['newsletter_send_nonce']))
             return $post_id;
 
@@ -127,26 +141,35 @@ class Sender_Metabox
 
         $groups = array();
 
-        if (isset($_POST['groups'])) $groups = array_map('intval', $_POST['groups']);
+        if (isset($_POST['groups'])) $groups = array_map('absint', $_POST['groups']);
 
         wp_set_object_terms($post_id, $groups, 'newsletter_groups');
 
+        $model = Subscribers_Model::get_instance();
+
+        $receivers = $model->get_groups_subscribers($groups);
+        $receivers = array_map('array_pop', $receivers);
+
+
 
         if (isset($_POST['receivers']) && is_array($_POST['receivers'])) {
-            $receivers = array();
-            foreach ($_POST['receivers'] as $key => $receiver) {
-                $receiver = intval($receiver);
-                if (!empty($receiver)) $receivers[] = $receiver;
-            }
+            $receivers = array_merge($_POST['receivers'], $receivers);
+        }
+
+        foreach ($receivers as $key => $receiver) {
+            $receiver = absint($receiver);
+            if (!empty($receiver)) $receivers[$key] = $receiver;
+        }
+
+        if ($_POST['send_now']) {
 
             include_once plugin_dir_path(__FILE__) . '../../public/class-si-sender.php';
 
             $sender = Si_Sender::get_instance();
 
-            $sender->subscribers = $receivers;
+            $sender->subscribers = array_unique($receivers);
 
             $sender->send_newsletter($post_id);
-            
         }
 
 

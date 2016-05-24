@@ -26,12 +26,16 @@ class Subscribtion_Industry_Activator
     /**
      * Short Description. (use period)
      *
-     * Long Description.
+     * Checking and updating the database.
      *
      * @since    1.0.0
      */
     public static function activate()
     {
+        $version = get_option('si_db_version');
+        
+        if (intval($version) > 0) return;
+        
         global $wpdb;
         $table_name = $wpdb->prefix . 'si_subscribers';
         $table_groups_name = $wpdb->prefix . 'si_groups_relations';
@@ -76,9 +80,9 @@ CREATE TABLE {$table_groups_name} (
             ));
             if (!is_wp_error($id)) update_option('si_options', array('confirm_page' => $id));
         }
-
+        
+        update_option('si_db_version', 1);
 
     }
-
 
 }
