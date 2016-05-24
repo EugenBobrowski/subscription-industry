@@ -13,6 +13,16 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+		compress: {
+			main: {
+				options: {
+					archive: 'subscription-industry.zip'
+				},
+				files: [
+					{expand: true, src: ['**', '!node_modules/**', '!subscription-industry.zip'], dest: '/'}
+				]
+			}
+		},
 		watch: {
 			styles: {
 				files: ['admin/**/*.less'], // which files to watch
@@ -23,7 +33,7 @@ module.exports = function (grunt) {
 			}
 		}
 	});
-
+	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
