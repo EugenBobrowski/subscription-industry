@@ -13,15 +13,21 @@ Subscribtion industry is a real customizable newsletter system for your site.
 * Simple editor. With an code-free experience. And grate
 * Customizable subscription widget/form. Custom HTML structure
 * Web versions of Newsletters
-* Customizable Newsletter Templates with easy to use hooks and newsletters fields
+* Separate Newsletters and subscribers by groups 
+* Include default text and HTML template
+* Customizable and addable Newsletter Templates with easy to use hooks and newsletters fields
 * Compatible with Postman, WP Mail SMTP, Easy WP SMTP, Easy SMTP Mail, WP Mail Bank
 
 There are many shortcode types to use in the plugin;
 
-* Letter shortcodes
-    * Public
-    * Personal
-* Si Widget Shortcodes.
+**Letter shortcodes (public and personal)**
+
+* `[subscriber]` 
+* `[unsubscribe]` 
+
+**Si Widget Shortcodes**
+
+
 
 **Hooks**
 
@@ -94,21 +100,48 @@ function add_my_templates ($templates) {
 ```
 
 
-### A question that someone might have
+### How to create simple subscription form
+ 
+ The Subscribtion Industry plugin provide your subscribe form be ever so custom as you would like. 
+ 
+ Just insert the html code in textarea of widget using the SI Form shortcodes:
+ 
+  * `[form]` Not required. Use it if you need to save your DOM for styles.
+  * `[email]` E-mail input. Required. 
+ 	+ `type` type text
+ 	+ `class` 
+  * `[name]` Name of subscriber. Optional
+  * `[group]`
+     + `type` Type of field. Available: `hidden`,
+  * `[submit]` or `[button]`. Optional. But really recomended.
+  
+  You can add your own shortcode. Use `si_form_shortcodes` filter to add your callback function.
+ 
+   ```php
+     function my_si_form_shortcode_callback($args, $contnent = ''){
+     if (empty($args[color])) $class = 'default'
+     return '<span class=' . $class . '>' . $content . '</span>';
+   }
+ 
+   function add_my_si_form_shortcode ($shrtcodes) {
+     $shorcodes[my_form_element] = 'my_si_form_shortcode_callback';
+     return $shortcodes;
+   }
+   add_filter('si_form_shortcodes', 'my_si_form_shortcode');
+   ```
 
-An answer to that question.
+### How to customize subscription form messages?
+    
+Lorem ipsum
 
-### What about foo bar?
+### How to change subscribtion form messages displaying function?
 
-Answer to foo bar dilemma.
+Lorem ipsum
 
 ## Screenshots
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. Newsletter composing with default html template.
+2. Newsletter composing with template, defined in theme.
 
 ## Changelog
 
@@ -116,48 +149,3 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 *Release Date - 25th May, 2016*
 
 * Initial
-
-
----
-
-
-
-
-###Customizing form
-
-The Subscribtion Industry plugin provide your subscribe form be ever so custom as you would like. 
-
-Just insert the html code in textarea of widget using the SI Form shortcodes:
-
- * `[form]` Not required. Use it if you need to save your DOM for styles.
- * `[email]` E-mail input. Required. 
-	+ `type` type text
-	+ `class` 
- * `[name]` Name of subscriber. Optional
- * `[group]`
-    + `type` Type of field. Available: `hidden`,
- * `[submit]` or `[button]`. Optional. But really recomended.
- 
- You can add your own shortcode. Use `si_form_shortcodes` filter to add your callback function.
-
-  ```php
-    function my_si_form_shortcode_callback($args, $contnent = ''){
-    if (empty($args[color])) $class = 'default'
-    return '<span class=' . $class . '>' . $content . '</span>';
-  }
-
-
-  function add_my_si_form_shortcode ($shrtcodes) {
-    $shorcodes[my_form_element] = 'my_si_form_shortcode_callback';
-    return $shortcodes;
-  }
-  add_filter('si_form_shortcodes', 'my_si_form_shortcode');
-  ```
- 
-###Customizing messaging
- 
-1. Create the js function in your theme. 
-2. Use the `si_form_localize` filter to hook the alert function to return messages.
-
- 
- 
