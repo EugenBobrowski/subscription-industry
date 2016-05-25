@@ -8,16 +8,16 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              http://example.com
+ * @link              http://soft-industry.com
  * @since             1.0.0
  * @package           Subscribtion_Industry
  *
  * @wordpress-plugin
  * Plugin Name:       Subscription Industry
- * Plugin URI:        http://example.com/subscribtion-industry-uri/
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Plugin URI:        http://soft-industry.com/
+ * Description:       Provide your site to get the subscribe widget and send newsletters.
  * Version:           1.0.0
- * Author:            Eugen Bobrowski
+ * Author:            Soft Industry Ltd.
  * Author URI:        http://soft-industry.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt

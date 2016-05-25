@@ -1,17 +1,20 @@
-#Subscribtion Industry by Soft-Industry
+# Subscribtion Industry by Soft-Industry
 
-* Сделать отправку имейлов в разделе подписчиков и непосредственно из настроек Ньюзлеттера.
-* Реализовать группы отмеченные.
-* Реализовать предпросмотр рассылки без добавления вида в тему. Так что бы вид находился  в плагине.
-* Отчеты об отправке можно выставлять.
+Add subscription and newsletter system to your website. With unlimited newsletters, subscribers and custom shortcodes.
 
-##Subscribers
+---
 
-Subscribtion industry use the users table to menage subscribers. 
+Subscribtion industry is a real customizable newsletter system for your site. 
 
-##Customizing
+**Features**
 
-###Shortcodes and variables
+* Unlimited Subscribers
+* Unlimited Responsive Newsletters
+* Simple editor. With an code-free experience. And grate
+* Customizable subscription widget/form. Custom HTML structure
+* Web versions of Newsletters
+* Customizable Newsletter Templates with easy to use hooks and newsletters fields
+* Compatible with Postman, WP Mail SMTP, Easy WP SMTP, Easy SMTP Mail, WP Mail Bank
 
 There are many shortcode types to use in the plugin;
 
@@ -20,7 +23,28 @@ There are many shortcode types to use in the plugin;
     * Personal
 * Si Widget Shortcodes.
 
-###Add custom template
+**Hooks**
+
+* 
+
+
+## Installation
+
+This section describes how to install the plugin and get it working.
+
+e.g.
+
+1. Upload `subscribtion-industry.zip to the `/wp-content/plugins/` directory
+2. Activate the plugin through the 'Plugins' menu in WordPress
+
+## Frequently Asked Questions
+
+
+### How to add my custom template?
+
+Adding your custom template you can add via `si_templates` hook. 
+
+**Example**
 
 ```php
 add_filter('si_templates', 'add_my_templates');
@@ -68,6 +92,35 @@ function add_my_templates ($templates) {
 }
 
 ```
+
+
+### A question that someone might have
+
+An answer to that question.
+
+### What about foo bar?
+
+Answer to foo bar dilemma.
+
+## Screenshots
+
+1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
+the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
+directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
+(or jpg, jpeg, gif).
+2. This is the second screen shot
+
+## Changelog
+
+### 1.0
+*Release Date - 25th May, 2016*
+
+* Initial
+
+
+---
+
+
 
 
 ###Customizing form
