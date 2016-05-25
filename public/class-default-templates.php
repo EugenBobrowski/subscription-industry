@@ -60,7 +60,7 @@ class Si_Default_Templates
                         )
 
                     ),
-                    'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:{bg};font-family:Helvetica,Arial,sans-serif" width="100%" bgcolor="{bg}">
+                    'body' => '<table border="0" cellspacing="0" cellpadding="15" style="background-color:{bg};font-family: Helvetica,Arial,sans-serif; font-size: 13px; line-height: 1.5;" width="100%" bgcolor="{bg}">
 <tr>
 <td style="padding:15px;"></td><td style="padding:15px;" width="600">
     <img src="{logo}" alt="" height="70" style="" />
