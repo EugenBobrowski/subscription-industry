@@ -103,6 +103,7 @@ class Subscribtion_Industry_Public
             'has_archive' => true,
             'hierarchical' => true,
             'menu_position' => null,
+            'menu_icon'   => 'dashicons-email-alt',
             'supports' => array('title', 'page-attributes'),
         );
         register_post_type('newsletters', $args);
