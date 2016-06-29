@@ -13,7 +13,7 @@
         padding: 10px 0;
         width: 100%;
 
-        select {
+        select, .regular-text {
           width: 100%
         }
       }
@@ -34,5 +34,25 @@
     vertical-align: middle;
     text-align: left;
     float: left;
+  }
+}
+
+.import-table {
+  tr {
+    &.exists {
+      td, th {
+        opacity: 0.8;
+      }
+    }
+  }
+}
+.subscribers {
+  .status {
+    .confirmed {
+      color: #0A8A45;
+    }
+    .unconfirmed {
+      color: #DC350C;
+    }
   }
 }

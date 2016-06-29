@@ -41,7 +41,7 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
     <form method="get">
         <input type="hidden" name="page" value="subscribers">
 
-        <table class="wp-list-table widefat fixed striped users">
+        <table class="wp-list-table widefat fixed striped subscribers">
             <thead>
             <tr>
                 <td id="cb" class="manage-column column-cb check-column">
@@ -132,7 +132,7 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                         ?>
                     </td>
                     <td class="status column-status" data-colname="Status" style="width: 10em;">
-                        <?php echo ($subscriber->status) ? '<strong style="color: #0A8A45">Confirmed</strong>' : '<strong style="color: #DC350C;">Unconfirmed</strong>'; ?>
+                        <?php echo ($subscriber->status) ? '<strong class="confirmed" >Confirmed</strong>' : '<strong class="unconfirmed">Unconfirmed</strong>'; ?>
                     </td>
                     <td class="last-send column-date" data-colname="Last Send">
                         <?php echo mysql2date('Y/m/d H:i:s', $subscriber->last_send); ?>
