@@ -200,69 +200,76 @@ class Subscribers_Page
 
 		foreach ($subscribers as $exist) {
 			$data[$exist['email']]['exists'] = true;
+			$data[$exist['email']]['status'] = intval($exist['status']);
+			$data[$exist['email']]['name'] = $exist['name'];
 		}
-
 
 		//email exists
 		echo json_encode($data);
 		exit;
-
-
-
-
-
 	}
 	public function do_import()
 	{
+		if (!isset($_POST['data'])) {
+			echo 'no data';
+			exit;
+		}
 		$data = $_POST['data'];
+		$response = array(
+			'no_mail' => 0,
+			'wrong_mails' => array(),
+			'existing' => array(),
+			'imported' => array()
+		);
+		include_once plugin_dir_path(__FILE__) . '../class-subscribers-model.php';
+		$subscribers_model = Subscribers_Model::get_instance();
+		include_once plugin_dir_path(__FILE__) . '../../public/class-si-sender.php';
+		$sender = Si_Sender::get_instance();
 
-		$emails = array();
-
-		foreach ($data as $key=>$entry) {
-			if (empty($entry['email']) || !sanitize_text_field($entry['email']) || in_array($entry['email'], $emails)) {
-				unset($data[$key]);
+		foreach ($data as $subscriber) {
+			if (!isset($subscriber['email'])) {
+				$response['no_mail']++;
 				continue;
 			}
 
-			$entry['gravatar'] = get_avatar($entry['email'], 32);
+			$email = sanitize_email($subscriber['email']);
 
-			//group exists
-
-			if (!empty($entry['groups'])) {
-				$data[$key]['groups'] = explode(',', $entry['groups']);
+			if (empty($email)) {
+				$response['wrong_mails'][] = $subscriber['email'];
+				continue;
 			}
 
-			$emails[] = $entry['email'];
+			$name = (empty($_POST['name'])) ? '' : sanitize_text_field($_POST['name']);
 
-			$data[$entry['email']] = $entry;
-			unset($data[$key]);
+			$insert = $subscribers_model->insert_subscriber($email, $name);
 
+			if (!empty(intval($insert))) {
+
+				$response['imported'][] = $subscriber['email'];
+
+				if (isset($subscriber['groups'])) {
+					$groups = array();
+//
+					foreach (explode( ',', trim( $subscriber['groups'], " \n\t\r\0\x0B," ) ) as $group_name) {
+						$term = term_exists($group_name, 'newsletter_groups');
+						if (empty($term['term_id'])) $term = wp_insert_term($group_name, 'newsletter_groups');
+						$groups[] = $term['term_id'];
+					}
+					$groups = array_map('intval', $groups);
+				}
+
+				$sender->send_confirmation_letter($insert);
+				$message_id = 'success';
+
+			} else {
+				$response['existing'][] = $subscriber['email'];
+				continue;
+			}
 
 		}
 
-		/**
-		 * Check emails for existing
-		 */
-		$model = Subscribers_Model::get_instance();
-
-		$subscribers = $model->get_subscribers(array(
-			'where' => array(
-				'field' => 'email',
-				'compare' => 'IN',
-				'value' => '(\'' . implode('\', \'', $emails) . '\')',
-			)
-		), ARRAY_A);
-
-		foreach ($subscribers as $exist) {
-			$data[$exist['email']]['exists'] = true;
-		}
-
-
-		//email exists
-		echo json_encode($data);
+		echo json_encode($response);
 		exit;
-
-
 
 
 

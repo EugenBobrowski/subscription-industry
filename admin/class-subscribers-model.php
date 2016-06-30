@@ -193,12 +193,14 @@ if (!class_exists('Subscribers_Model')) {
             if (!$append) {
                 $not_in = implode(', ', $groups);
                 $sql .= "DELETE FROM `{$table_groups_relations}` WHERE `subscriber_id` = {$subscriber_id} AND `term_taxonomy_id` NOT IN ({$not_in});";
+                $wpdb->query($sql);
             }
-            $wpdb->query($sql);
+            
 
             foreach ($groups as $group) {
-                if (!term_exists($group, 'newsletter_groups')) continue;
+                if (!term_exists($group, 'newsletter_groups')) {var_dump($group, 'xxxxxxxxxxxx'); continue;}
                 $sql = "INSERT INTO {$table_groups_relations} (subscriber_id, term_taxonomy_id) VALUES ({$subscriber_id}, {$group});";
+                var_dump($sql);
                 $wpdb->query($sql);
             }
 

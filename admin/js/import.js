@@ -2,12 +2,15 @@
 
 (function ($) {
 
-    var $upload_field, $import_table;
+    var $import_form, $upload_field, $import_table, $import_text;
 
     $(document).ready(function () {
-
+        $import_form = $('#import_form');
         $upload_field = $('#import_csv');
         $import_table = $('#import_table');
+        $import_text = $('#import_text');
+
+        theTable.table = $import_table;
 
         $upload_field.change(function () {
 
@@ -24,13 +27,11 @@
 
                 reader.onloadend = function () {
 
-                    importTable.table = $import_table;
-
-                    importTable.done = function () {
+                    theTable.done = function () {
                         $this.emptyAtfUpload();
                     };
 
-                    importTable.insertCSV(csv2object(reader.result));
+                    theTable.insertCSV(csv2object(reader.result));
 
 
                 };
@@ -41,69 +42,154 @@
             }
 
         });
-        $('#import_form').on('submit', function (e) {
-            e.preventDefault();
+        $import_text.change(function () {
 
             var $this = $(this),
-                data = {};
-            
-            console.log($upload_field.val());
+                Content = $this.val(),
+                csv = {},
+                emails = Content.split(/(\n|,|\s)/)
+                    .map(function (val) {
+                        return val.trim();
+                    })
+                    .filter(function (val) {
+                        if (validateEmail(val)) return true;
+                    });
 
-            data.data = [];
-
-            $this.find('input.subscriber:checked').each(function () {
-                data.data.push(JSON.parse($(this).val()));
+            emails.forEach(function (val, id) {
+                csv[id] = {
+                    name: '',
+                    email: val,
+                    groups: '',
+                    status: false,
+                    last_send: ''
+                };
             });
-            data.unconfirmed2all = $this.find('[name=set_unconfirm]:checked').val();
-            data.send2unconfirmed = $this.find('[name=confirm]:checked').val();
-            console.log(data);
+            theTable.done = function () {
+                $import_text.val('');
+            };
+            theTable.insertCSV(csv);
+
         });
+        $import_form.on('submit', importBuddies.onsubmit);
     });
 
-    var importTable = {};
+    var importBuddies = {};
 
-    importTable.insertCSV = function (csvObj) {
+    importBuddies.onsubmit = function (e) {
+        e.preventDefault();
 
-        if (importTable.table == undefined) return;
+        importBuddies.this = $(this);
+        importBuddies.prepare_ajax_data();
+        importBuddies.ajax();
 
-        importTable.emptyLine = importTable.table.find('.empty-line');
-        importTable.emptyLine.hide();
+    };
+
+    importBuddies.prepare_ajax_data = function () {
+
+        var data = {};
+
+        data.data = [];
+
+        importBuddies.checked = importBuddies.this.find('input.subscriber:checked');
+        importBuddies.checked.each(function () {
+            var $this = $(this);
+            var val = JSON.parse($this.val());
+            data.data.push(val);
+            console.log('data', $this.data('email'));
+        });
+
+        data.unconfirmed2all = importBuddies.this.find('[name=set_unconfirm]:checked').val();
+        data.send2unconfirmed = importBuddies.this.find('[name=confirm]:checked').val();
+        data.action = 'do_import';
+
+        importBuddies.ajax_data = data;
+
+        console.log(importBuddies.ajax_data);
+    };
+
+    importBuddies.ajax = function () {
+        $.post(si_admin_ajax.ajax_url, importBuddies.ajax_data, importBuddies.callback);
+    };
+
+    importBuddies.callback = function (response) {
+        console.log('callback', response);
+
+        var report = JSON.parse(response);
+
+        console.log(report);
+
+        importBuddies.checked.each(function () {
+            var $this = $(this),
+                val = JSON.parse($this.val()),
+                $name = $this.parents('tr').find('.name');
+
+            $this.prop('checked', false);
+            $this.prop('disabled', true);
+
+            if (report.imported.indexOf(val.email) > -1) {
+                $name.append(' <em>Imported</em>');
+                
+            }
+            /**
+             * ToDo: for others types
+             */
+            //"no_mail":0,"wrong_mails":[],"existing":[],"imported":["yullis2008@gmail.com"]}
+
+        });
+
+        for(var type in report) {
+            if (type == 'imported') {
+                report.imported.forEach(function (val) {
+                    var $field = $import_table.find('input[data-email="'+val+'"]');
+                    $field.addClass('dfslkjgldfskgjlfgkj');
+                    console.log($field);
+                });
+                $import_table.find('[data]')
+            }
+        }
+
+    };
+
+    var theTable = {};
+
+    theTable.insertCSV = function (csvObj) {
+
+        if (theTable.table == undefined) return;
+
+        theTable.emptyLine = theTable.table.find('.empty-line');
+        theTable.emptyLine.hide();
 
 
         var data = {
             'action': 'check_import',
-            'data' : csvObj
+            'data': csvObj
         };
-        
-        jQuery.post(si_admin_ajax.ajax_url, data, function(response) {
+        jQuery.post(si_admin_ajax.ajax_url, data, function (response) {
 
             csvObj = JSON.parse(response);
 
             for (var line_id in csvObj) {
 
-                importTable.insertLine(csvObj[line_id]);
+                theTable.insertLine(csvObj[line_id]);
 
             }
 
-            importTable.showLines();
+            theTable.showLines();
 
         });
 
 
-
-
     };
 
-    importTable.insertLine = function (line) {
+    theTable.insertLine = function (line) {
 
         if (!validateEmail(line.email)) return;
 
 
-
-        var newLine = importTable.emptyLine.clone();
+        var newLine = theTable.emptyLine.clone();
         var status = false;
 
-        if (line.status == 'Confirmed' || (line.status && line.status != 'Unconfirmed')) status = true;
+        if (line.status == 'Confirmed' || (line.status && line.status != 'Unconfirmed' && line.status && line.status != 'false')) status = true;
 
         newLine.removeClass('empty-line');
         newLine.find('.name').html('<strong>' + line.name + '</strong>');
@@ -117,30 +203,30 @@
             newLine.find('.name').append(' <em>Already exists</em> ');
             newLine.addClass('exists');
         } else {
-            newLine.find('input.subscriber').prop('disabled', false).val(JSON.stringify(line));
+            newLine.find('input.subscriber').prop('disabled', false).val(JSON.stringify(line)).data('email', line.email);
         }
 
-        newLine.insertBefore(importTable.emptyLine).hide();
+        newLine.insertBefore(theTable.emptyLine).hide();
 
 
     };
 
-    importTable.showLines = function () {
-        var lines = importTable.table.find('tr').filter(':hidden:not(.empty-line)');
-        importTable.showOneLine(lines);
+    theTable.showLines = function () {
+        var lines = theTable.table.find('tr').filter(':hidden:not(.empty-line)');
+        theTable.showOneLine(lines);
     };
-    importTable.showOneLine = function (lines) {
+    theTable.showOneLine = function (lines) {
 
         lines.filter(':first').show('slow');
 
         var last = lines.filter(':hidden');
         if (last.length < 1) {
-            if (importTable.done != undefined) importTable.done();
+            if (theTable.done != undefined) theTable.done();
             return;
         }
 
         setTimeout(function () {
-            importTable.showOneLine(last);
+            theTable.showOneLine(last);
         }, 10)
     };
 
