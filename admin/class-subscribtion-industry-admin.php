@@ -43,10 +43,12 @@ class Subscribtion_Industry_Admin
     {
         $this->version = $version;
         add_action('load-post.php', array($this, 'load_metabox'));
-        add_action('load-post.php', array($this, 'load_metabox_send'));
         add_action('load-post-new.php', array($this, 'load_metabox'));
+        add_action('load-post.php', array($this, 'load_metabox_send'));
+
         $this->load_subscribers_page();
         $this->load_options_page();
+        $this->load_admin_bar_node();
     }
 
     /**
@@ -76,7 +78,11 @@ class Subscribtion_Industry_Admin
         Sender_Metabox::get_instance($this->version);
     }
 
+    public function load_admin_bar_node()
+    {
+        include_once plugin_dir_path(__FILE__) . 'class-admin-bar-node.php';
+        Admin_Bar_Node::get_instance($this->version);
+    }
 
-    
 
 }

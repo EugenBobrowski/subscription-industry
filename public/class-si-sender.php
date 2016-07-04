@@ -145,6 +145,7 @@ class Si_Sender
     {
         $templater = Si_Templater::get_instance();
         $templater->options = $this->options;
+        $templater->letter_type = $this->letter_type;
         
         $this->code = $templater->letter_shortcodes($this->code);
         $receivers = array();
