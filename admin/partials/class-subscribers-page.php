@@ -215,16 +215,23 @@ class Subscribers_Page
 			exit;
 		}
 		$data = $_POST['data'];
+		$make_unconfirmed = absint($_POST['unconfirmed2all']);
+		$send_confirmation = absint($_POST['send2unconfirmed']);
+		
 		$response = array(
 			'no_mail' => 0,
 			'wrong_mails' => array(),
 			'existing' => array(),
 			'imported' => array()
 		);
+
+
 		include_once plugin_dir_path(__FILE__) . '../class-subscribers-model.php';
 		$subscribers_model = Subscribers_Model::get_instance();
 		include_once plugin_dir_path(__FILE__) . '../../public/class-si-sender.php';
 		$sender = Si_Sender::get_instance();
+
+
 
 		foreach ($data as $subscriber) {
 			if (!isset($subscriber['email'])) {
@@ -235,17 +242,20 @@ class Subscribers_Page
 			$email = sanitize_email($subscriber['email']);
 
 			if (empty($email)) {
-				$response['wrong_mails'][] = $subscriber['email'];
+				$response['wrong'][] = $subscriber;
 				continue;
 			}
 
-			$name = (empty($_POST['name'])) ? '' : sanitize_text_field($_POST['name']);
+			$name = (empty($subscriber['name'])) ? '' : sanitize_text_field($subscriber['name']);
 
-			$insert = $subscribers_model->insert_subscriber($email, $name);
+			$status = (isset($subscriber['status']) && $subscriber['status'] != 'false' && $subscriber['status'] && !$make_unconfirmed);
+
+			$insert = $subscribers_model->insert_subscriber($email, $name, $status);
+
 
 			if (!empty(intval($insert))) {
 
-				$response['imported'][] = $subscriber['email'];
+
 
 				if (isset($subscriber['groups'])) {
 					$groups = array();
@@ -258,11 +268,14 @@ class Subscribers_Page
 					$groups = array_map('intval', $groups);
 				}
 
-				$sender->send_confirmation_letter($insert);
-				$message_id = 'success';
+				if ($send_confirmation && !$status) $sender->send_confirmation_letter($insert);
+
+				$subscriber['id'] = $insert;
+				$subscriber['status'] = $status;
+				$response['imported'][] = $subscriber;
 
 			} else {
-				$response['existing'][] = $subscriber['email'];
+				$response['exists'][] = $subscriber;
 				continue;
 			}
 
@@ -308,7 +321,7 @@ class Subscribers_Page
 		$model = Subscribers_Model::get_instance();
 
 		if (empty($subscriber_id)) {
-			$subscriber_id = $model->insert_subscriber($email, $name, empty($_POST['confirm']));
+			$subscriber_id = $model->insert_subscriber($email, $name, !empty($_POST['confirm']));
 
 			$model->set_subscriber_group($subscriber_id, $groups);
 

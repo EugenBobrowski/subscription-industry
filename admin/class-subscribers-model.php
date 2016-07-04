@@ -16,7 +16,7 @@ if (!class_exists('Subscribers_Model')) {
 
             $this->table_subscribers = $wpdb->prefix . 'si_subscribers';
             $this->table_groups = $wpdb->prefix . 'si_groups_relations';
-            
+
         }
 
         public static function get_instance()
@@ -48,12 +48,12 @@ if (!class_exists('Subscribers_Model')) {
 
         }
 
-        public function get_groups_subscribers ($groups_ids, $confirmed = 1, $full = false, $output = OBJECT) {
+        public function get_groups_subscribers($groups_ids, $confirmed = 1, $full = false, $output = OBJECT)
+        {
 
             if ($full) {
                 $select = '';
-            }
-            else {
+            } else {
                 $select = 'subscriber_id';
                 $output = ARRAY_N;
             }
@@ -129,7 +129,7 @@ if (!class_exists('Subscribers_Model')) {
 
         }
 
-        public function insert_subscriber($email, $name = '', $confirm = true)
+        public function insert_subscriber($email, $name = '', $confirmed = false)
         {
             global $wpdb;
 
@@ -138,19 +138,22 @@ if (!class_exists('Subscribers_Model')) {
 
             $exists = $wpdb->get_results($select);
             if (!empty($exists)) {
-                $confirm = '';
-                if ($exists[0]->activation_key) $confirm = 'unconfirmed';
-                return 'exists ' . $confirm;
+                $confirmed = '';
+                if ($exists[0]->activation_key) $confirmed = 'unconfirmed';
+                return 'exists ' . $confirmed;
             }
 
 
-            $pass = ($confirm) ? wp_generate_password(24, true) : '';
+            $pass = wp_generate_password(24, true);
 
 
             $insert = $wpdb->insert($wpdb->prefix . 'si_subscribers', array(
-                'email' => $email,
-                'name' => $name,
-                'activation_key' => $pass));
+                    'email' => $email,
+                    'name' => $name,
+                    'activation_key' => $pass,
+                    'status' => absint($confirmed),
+                )
+            );
 
             if (true == $insert) {
                 return $wpdb->insert_id;
@@ -169,23 +172,23 @@ if (!class_exists('Subscribers_Model')) {
 
         public function set_subscriber_group($subscriber_id = 0, $groups = '', $append = false)
         {
-            $subscriber_id = (int) $subscriber_id;
+            $subscriber_id = (int)$subscriber_id;
 
-            if ( !$subscriber_id )
+            if (!$subscriber_id)
                 return false;
 
-            if ( empty($groups) )
+            if (empty($groups))
                 return false;
 
-            if ( ! is_array( $groups ) ) {
-                $comma = _x( ',', 'tag delimiter' );
-                if ( ',' !== $comma )
-                    $groups = str_replace( $comma, ',', $groups );
-                $groups = explode( ',', trim( $groups, " \n\t\r\0\x0B," ) );
+            if (!is_array($groups)) {
+                $comma = _x(',', 'tag delimiter');
+                if (',' !== $comma)
+                    $groups = str_replace($comma, ',', $groups);
+                $groups = explode(',', trim($groups, " \n\t\r\0\x0B,"));
             }
 
             global $wpdb;
-            
+
             $table_groups_relations = $wpdb->prefix . 'si_groups_relations';
 
             $sql = '';
@@ -195,10 +198,13 @@ if (!class_exists('Subscribers_Model')) {
                 $sql .= "DELETE FROM `{$table_groups_relations}` WHERE `subscriber_id` = {$subscriber_id} AND `term_taxonomy_id` NOT IN ({$not_in});";
                 $wpdb->query($sql);
             }
-            
+
 
             foreach ($groups as $group) {
-                if (!term_exists($group, 'newsletter_groups')) {var_dump($group, 'xxxxxxxxxxxx'); continue;}
+                if (!term_exists($group, 'newsletter_groups')) {
+                    var_dump($group, 'xxxxxxxxxxxx');
+                    continue;
+                }
                 $sql = "INSERT INTO {$table_groups_relations} (subscriber_id, term_taxonomy_id) VALUES ({$subscriber_id}, {$group});";
                 var_dump($sql);
                 $wpdb->query($sql);
@@ -206,7 +212,9 @@ if (!class_exists('Subscribers_Model')) {
 
             return true;
         }
-        public function get_subscriber_group ($subscriber_id, $return_ids = true) {
+
+        public function get_subscriber_group($subscriber_id, $return_ids = true)
+        {
             global $wpdb;
 
             if ($return_ids) {

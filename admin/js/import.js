@@ -181,22 +181,23 @@
 
     };
 
+
     theTable.insertLine = function (line) {
 
         if (!validateEmail(line.email)) return;
 
 
         var newLine = theTable.emptyLine.clone();
-        var status = false;
 
-        if (line.status == 'Confirmed' || (line.status && line.status != 'Unconfirmed' && line.status && line.status != 'false')) status = true;
+        console.log( line.status, parseInt(line.status), (line.status == 'Confirmed' || parseInt(line.status) == 1 || line.status === true || line.status == 'true'));
+        line.status = (line.status == 'Confirmed' || parseInt(line.status) == 1 || line.status === true || line.status == 'true');
 
         newLine.removeClass('empty-line');
         newLine.find('.name').html('<strong>' + line.name + '</strong>');
         newLine.find('.name').prepend(line.gravatar);
         newLine.find('.email').html('<a href="mailto:' + line.email + '">' + line.email + '</a>');
         newLine.find('.group').text(line.groups);
-        newLine.find('.status').html((status) ? '<strong class="confirmed">Confirmed</strong>' : '<strong class="unconfirmed">Unconfirmed</strong>');
+        newLine.find('.status').html((line.status) ? '<strong class="confirmed">Confirmed</strong>' : '<strong class="unconfirmed">Unconfirmed</strong>');
         newLine.find('.last-send').text(line.last_send);
 
         if (line.exists != undefined && line.exists) {
