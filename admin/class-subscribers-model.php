@@ -35,6 +35,7 @@ if (!class_exists('Subscribers_Model')) {
             $args = wp_parse_args($args, array(
                 'orderby' => 'id',
                 'order' => 'asc',
+                'select' => '*',
             ));
 
             $where = '';
@@ -42,8 +43,12 @@ if (!class_exists('Subscribers_Model')) {
             if (isset($args['where'])) {
                 $where = 'WHERE ' . $args['where']['field'] . ' ' . $args['where']['compare'] . ' ' . $args['where']['value'];
             }
-
-            $select = 'SELECT * FROM ' . $wpdb->prefix . 'si_subscribers ' . $where . ' ORDER BY ' . $args['orderby'] . ' ' . $args['order'] . ';';
+            $select = $args['select'];
+            if (is_array($select)) {
+                $select = '`' . implode('`, `', $select) . '`';
+            }
+            
+            $select = "SELECT {$select} FROM " . $wpdb->prefix . 'si_subscribers ' . $where . ' ORDER BY ' . $args['orderby'] . ' ' . $args['order'] . ';';
             return $wpdb->get_results($select, $output);
 
         }
