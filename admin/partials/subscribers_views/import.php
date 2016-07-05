@@ -9,8 +9,16 @@
     <div class="wrap">
 
 
-        <h2><?php _e('Import Subscribers', 'si');
-            ?></h2>
+        <h2><?php _e('Import Subscribers', 'si'); ?>
+            <a href="<?php echo admin_url('users.php?page=subscribers'); ?>"
+               class="page-title-action">Subscribers</a>
+            <span class="others-parts" style="float: right; margin-right: -15px;">
+            <a href="<?php echo admin_url('edit.php?post_type=newsletters'); ?>"
+               class="page-title-action">Newsletters</a>
+            <a href="<?php echo admin_url('options-general.php?page=si-options'); ?>"
+               class="page-title-action">Options</a>
+        </span>
+        </h2>
         <form action="post" id="import_form">
             <table id="import_table" class="wp-list-table widefat fixed striped subscribers">
                 <thead>

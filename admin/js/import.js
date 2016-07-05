@@ -117,7 +117,7 @@
         var report = JSON.parse(response);
 
         console.log(report);
-
+        
         importBuddies.checked.each(function () {
             var $this = $(this),
                 val = JSON.parse($this.val()),
@@ -127,8 +127,9 @@
             $this.prop('disabled', true);
 
             if (report.imported.indexOf(val.email) > -1) {
-                $name.append(' <em>Imported</em>');
-                
+                $name.append(' <em class="imported">Imported</em>');
+            } else if (report.wrong.indexOf(val.email) > -1) {
+                $name.append(' <em class="wrong">Wrong</em>');
             }
             /**
              * ToDo: for others types
@@ -141,7 +142,6 @@
             if (type == 'imported') {
                 report.imported.forEach(function (val) {
                     var $field = $import_table.find('input[data-email="'+val+'"]');
-                    $field.addClass('dfslkjgldfskgjlfgkj');
                     console.log($field);
                 });
                 $import_table.find('[data]')
@@ -189,7 +189,6 @@
 
         var newLine = theTable.emptyLine.clone();
 
-        console.log( line.status, parseInt(line.status), (line.status == 'Confirmed' || parseInt(line.status) == 1 || line.status === true || line.status == 'true'));
         line.status = (line.status == 'Confirmed' || parseInt(line.status) == 1 || line.status === true || line.status == 'true');
 
         newLine.removeClass('empty-line');
@@ -201,7 +200,7 @@
         newLine.find('.last-send').text(line.last_send);
 
         if (line.exists != undefined && line.exists) {
-            newLine.find('.name').append(' <em>Already exists</em> ');
+            newLine.find('.name').append(' <em class="exists">Already exists</em> ');
             newLine.addClass('exists');
         } else {
             newLine.find('input.subscriber').prop('disabled', false).val(JSON.stringify(line)).data('email', line.email);

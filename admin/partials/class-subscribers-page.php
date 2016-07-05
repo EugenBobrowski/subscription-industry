@@ -235,14 +235,13 @@ class Subscribers_Page
 
 		foreach ($data as $subscriber) {
 			if (!isset($subscriber['email'])) {
-				$response['no_mail']++;
 				continue;
 			}
 
 			$email = sanitize_email($subscriber['email']);
 
 			if (empty($email)) {
-				$response['wrong'][] = $subscriber;
+				$response['wrong'][] = $subscriber['email'];
 				continue;
 			}
 
@@ -272,10 +271,10 @@ class Subscribers_Page
 
 				$subscriber['id'] = $insert;
 				$subscriber['status'] = $status;
-				$response['imported'][] = $subscriber;
+				$response['imported'][] = $subscriber['email'];
 
 			} else {
-				$response['exists'][] = $subscriber;
+				$response['exists'][] = $subscriber['email'];
 				continue;
 			}
 

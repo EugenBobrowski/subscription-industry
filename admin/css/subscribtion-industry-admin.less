@@ -55,4 +55,27 @@
       color: #DC350C;
     }
   }
+  .name {
+    em {
+      display: inline-block;
+      border: 1px solid #ccc;
+      padding: 0px 6px;
+      border-radius: 2px;
+      float: right;
+      &.imported {
+        background-color: #0A8A45;
+        border-color: #0A8A45;
+        color: #ffffff;
+      }
+      &.wrong {
+        background-color: #DC350C;
+        border-color: #DC350C;
+      }
+      &.exists {
+        color: #448a7c;
+        border-color: #0A8A45;
+      }
+    }
+  }
+
 }
