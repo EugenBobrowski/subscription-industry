@@ -181,6 +181,7 @@ $link_sort_by_lastsend = htmlspecialchars(add_query_arg(array(
                 <select name="action" id="bulk-action-selector-bottom">
                     <option value="-1">Bulk Actions</option>
                     <option value="delete">Delete</option>
+                    <option value="confirm">Confirm</option>
                 </select>
                 <input type="submit" id="doaction2" class="button action" value="Apply">
             </div>

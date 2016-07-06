@@ -58,10 +58,16 @@ class Subscribtion_Industry_Public
         add_action('init', array($this, 'newsletters'));
         add_action('the_content', array($this, 'subscribtion_content'));
         add_action('the_content', array($this, 'newsletter_preview'));
-
+        $this->load_cron_send();
         include_once 'class-default-templates.php';
         Si_Default_Templates::get_instance();
 
+    }
+    public function load_cron_send()
+    {
+        if (!isset($_GET['post_type']) && 'newsletters' != $_GET['post_type']) return;
+        include_once plugin_dir_path(__FILE__) . '/class-send-cron.php';
+        Sender_Cron::get_instance($this->version);
     }
 
     public static function get_instance($subscribtion_industry = null, $version = null)
@@ -93,7 +99,7 @@ class Subscribtion_Industry_Public
 
         $args = array(
             'labels' => $labels,
-            'public' => true,
+            'public' => false,
             'publicly_queryable' => true,
             'show_ui' => true,
             'show_in_menu' => true,
@@ -115,7 +121,7 @@ class Subscribtion_Industry_Public
                 'label' => __( 'Groups' ),
                 'rewrite' => array( 'slug' => 'groups' ),
                 'show_ui' => true,
-                'show_admin_column'     => true,
+//                'show_admin_column'     => true,
                 'hierarchical' => false,
             )
         );

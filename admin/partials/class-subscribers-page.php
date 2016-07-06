@@ -109,6 +109,13 @@ class Subscribers_Page
                     return 'load_confirm_deletetion_view';
                 }
                 break;
+            case 'confirm':
+
+                $this->do_confirm();
+                wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
+                exit;
+
+                break;
             case 'edit':
                 if (isset($_POST['action']) && 'doedit' == $_POST['action']) {
                     $this->do_edit();
@@ -305,10 +312,10 @@ class Subscribers_Page
         $out = fopen('php://output', 'w');
 
         fputcsv($out, array('name', 'email', 'status', 'last_send', 'groups'));
-        
+
         foreach ($subscribers as $subscriber) {
             $groups = $model->get_subscriber_group($subscriber['id'], false);
-            foreach ($groups as $key=>$term) {
+            foreach ($groups as $key => $term) {
                 $groups[$key] = $term->name;
             }
             fputcsv($out, array($subscriber['name'], $subscriber['email'], $subscriber['status'], $subscriber['last_send'], implode(', ', $groups)));
@@ -332,6 +339,20 @@ class Subscribers_Page
             $wpdb->get_results($delete);
         }
 
+
+        return true;
+    }
+    public function do_confirm()
+    {
+        if (!isset($_GET['subscribers'])) return false;
+        
+        $subscribers = $_GET['subscribers'];
+        $subscribers = array_map('absint', $subscribers);
+
+        global $wpdb;
+
+        $delete = 'UPDATE ' . $wpdb->prefix . 'si_subscribers SET `status` = 1 WHERE id IN (' . implode(',', $subscribers) . ');';
+        $wpdb->get_results($delete);
 
         return true;
     }

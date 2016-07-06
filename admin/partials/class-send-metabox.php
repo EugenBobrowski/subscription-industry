@@ -66,9 +66,12 @@ class Sender_Metabox
 
 
         $groups = wp_get_post_terms($post->ID, 'newsletter_groups',  array("fields" => "ids"));
+        $single_receivers = get_post_meta($post->ID, 'single_receivers', true);
         
         wp_nonce_field(plugin_basename(__FILE__), 'newsletter_send_nonce');
-
+        wp_schedule_single_event(time() + 10, 'send_newsletter', array('some_element', 'seconf'));
+        var_dump(wp_get_schedule( 'send_newsletters', array('some_element', 'seconf')));
+        file_put_contents(ABSPATH . '/cron.txt', 'kjslkj');
         ?>
 
         <table class="form-table atf-fields">
@@ -97,10 +100,36 @@ class Sender_Metabox
                     <?php AtfHtmlHelper::multiselect(array(
                         'id' => 'receivers',
                         'name' => 'receivers',
-                        'value' => '',
+                        'value' => $single_receivers,
                         'class' => 'check-buttons',
                         'vertical' => false,
                         'options' => $subscribers_opts,
+                    )); ?>
+
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="favicon">Start:</label>
+                </th>
+                <td>
+                    <?php AtfHtmlHelper::datepicker(array(
+                        'id' => 'receivers',
+                        'name' => 'receivers',
+                        'value' => '',
+                    )); ?>
+
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="favicon">Period:</label>
+                </th>
+                <td>
+                    <?php AtfHtmlHelper::text(array(
+                        'id' => 'receivers',
+                        'name' => 'receivers',
+                        'value' => '',
                     )); ?>
 
                 </td>
@@ -110,15 +139,19 @@ class Sender_Metabox
 
 
         <div class="si-sender-metabox-actions atf-fields">
+            <?php add_thickbox(); ?>
+            <div id="my-content-id" style="display:none;">
+                <p>
+                    This is my hidden content! It will appear in ThickBox when the link is clicked.
+                </p>
+            </div>
+
+
             <div class="statistic-info">
                 Send now
             </div>
             <div class="send-action">
-                <?php AtfHtmlHelper::tumbler(array(
-                    'id' => 'send_now',
-                    'name' => 'send_now',
-                    'value' => false,
-                )); ?>
+                <a href="#TB_inline?width=600&height=550&inlineId=my-content-id" class="thickbox button button-primary" >View schedules</a>
             </div>
             <div class="clear"></div>
         </div>
@@ -145,14 +178,23 @@ class Sender_Metabox
 
         wp_set_object_terms($post_id, $groups, 'newsletter_groups');
 
+
+
         $model = Subscribers_Model::get_instance();
 
         $receivers = $model->get_groups_subscribers($groups);
+
+
         $receivers = array_map('array_pop', $receivers);
 
 
 
         if (isset($_POST['receivers']) && is_array($_POST['receivers'])) {
+            $single_receivers = array_map('absint', $_POST['receivers']);
+
+            update_post_meta($post_id, 'single_receivers', $single_receivers);
+
+
             $receivers = array_merge($_POST['receivers'], $receivers);
         }
 

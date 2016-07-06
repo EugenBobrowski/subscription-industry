@@ -45,6 +45,7 @@ class Subscribtion_Industry_Admin
         add_action('load-post.php', array($this, 'load_metabox'));
         add_action('load-post-new.php', array($this, 'load_metabox'));
         add_action('load-post.php', array($this, 'load_metabox_send'));
+        add_action('load-edit.php', array($this, 'load_newsletter_customize'));
 
         $this->load_subscribers_page();
         $this->load_options_page();
@@ -82,6 +83,10 @@ class Subscribtion_Industry_Admin
     {
         include_once plugin_dir_path(__FILE__) . 'class-admin-bar-node.php';
         Admin_Bar_Node::get_instance($this->version);
+    }
+    public function load_newsletter_customize () {
+        include_once plugin_dir_path(__FILE__) . 'partials/class-newsletter-table.php';
+        Newsletter_Table::get_instance($this->version);
     }
 
 
