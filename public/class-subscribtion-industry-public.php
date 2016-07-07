@@ -65,7 +65,7 @@ class Subscribtion_Industry_Public
     }
     public function load_cron_send()
     {
-        if (!isset($_GET['post_type']) && 'newsletters' != $_GET['post_type']) return;
+        
         include_once plugin_dir_path(__FILE__) . '/class-send-cron.php';
         Sender_Cron::get_instance($this->version);
     }
