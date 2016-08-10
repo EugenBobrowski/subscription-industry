@@ -151,8 +151,9 @@ class Subscribers_Page
 
     public function assets($prefix)
     {
+        if ('users_page_subscribers' != $prefix) return;
         include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
-        AtfHtmlHelper::assets($prefix, null);
+        AtfHtmlHelper::assets($prefix . '__subscribers-page', null);
         wp_enqueue_style('subscribtion-industry', plugin_dir_url(__FILE__) . '../css/subscribtion-industry-admin.css', array(), $this->version, 'all');
     }
 
