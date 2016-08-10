@@ -35,7 +35,6 @@ class Si_Subscribe_Widget extends WP_Widget {
 
         add_action('wp_ajax_si_subscribe', array($this, 'ajax_callback'));
         add_action('wp_ajax_nopriv_si_subscribe', array($this, 'ajax_callback'));
-        add_action('wp_print_footer_scripts', array($this, 'javascript'), 99);
         add_action('wp_print_scripts', array($this, 'localize'));
 
         $this->si_widget_shortcodes = apply_filters('si_form_shortcodes',  array(
@@ -60,6 +59,9 @@ class Si_Subscribe_Widget extends WP_Widget {
      * @param array $instance Settings for the current Text widget instance.
      */
     public function widget( $args, $instance ) {
+
+        add_action('wp_print_footer_scripts', array($this, 'javascript'), 99);
+
 
         /** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
@@ -229,8 +231,10 @@ class Si_Subscribe_Widget extends WP_Widget {
 
     public function shortcode_button ($attr, $content) {
         $attributes = '';
-        foreach ($attr as $attribute=>$value) {
-            $attributes .= $attribute . '="' . $value . '" ';
+        if (!empty($attr)) {
+            foreach ($attr as $attribute=>$value) {
+                $attributes .= $attribute . '="' . $value . '" ';
+            }
         }
 
         return '<button ' . $attributes . '>'. $content . '</button>';
