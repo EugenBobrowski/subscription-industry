@@ -122,7 +122,6 @@ class Subscribers_Page
                     wp_redirect(get_admin_url(null, 'users.php?page=subscribers'));
                     exit;
                 } else {
-                    include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
                     add_action('admin_enqueue_scripts', array($this, 'assets'));
                     return 'load_edit_view';
                 }
@@ -144,6 +143,7 @@ class Subscribers_Page
                 exit;
                 break;
             default:
+
                 add_action('admin_enqueue_scripts', array($this, 'assets'));
                 return 'load_default_view';
         }
@@ -152,6 +152,7 @@ class Subscribers_Page
     public function assets($prefix)
     {
         if ('users_page_subscribers' != $prefix) return;
+
         include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
         AtfHtmlHelper::assets($prefix . '__subscribers-page', null);
         wp_enqueue_style('subscribtion-industry', plugin_dir_url(__FILE__) . '../css/subscribtion-industry-admin.css', array(), $this->version, 'all');

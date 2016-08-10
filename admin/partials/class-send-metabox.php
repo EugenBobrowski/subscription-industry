@@ -8,10 +8,8 @@ class Sender_Metabox
     private function __construct($version)
     {
         $this->version = $version;
-        include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-        add_action('admin_enqueue_scripts', array('AtfHtmlHelper', 'assets'));
         add_action('add_meta_boxes', array($this, 'newsletter_metabox'));
         add_action('save_post', array($this, 'newsletter_send'));
 
@@ -32,8 +30,13 @@ class Sender_Metabox
      *
      * @since    1.0.0
      */
-    public function enqueue_scripts()
+    public function enqueue_scripts($prefix)
     {
+        global $post;
+        if ('newsletter' != $post->post_type) return;
+        include_once plugin_dir_path(__FILE__) . '../atf-fields/htmlhelper.php';
+
+        AtfHtmlHelper::assets($prefix . '__newsletter-send-metabox');
         wp_enqueue_script('subscribtion-industry', plugin_dir_url(__FILE__) . '../js/subscribtion-industry-admin.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), $this->version, false);
     }
 
