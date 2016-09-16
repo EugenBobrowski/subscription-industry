@@ -16,7 +16,7 @@ class Sender_Cron
     {
         $this->version = $version;
         add_action('send_newsletter', array($this, 'cron_send'));
-        if ( ! wp_next_scheduled( 'my_task_hook' ) ) {
+        if ( ! wp_next_scheduled( 'send_newsletter' ) ) {
             wp_schedule_event( time()+5, 'hourly', 'send_newsletter' );
         }
     }
@@ -24,7 +24,7 @@ class Sender_Cron
 
     public function cron_send($args) {
 
-        file_put_contents(ABSPATH . '/cron.txt', implode('/', $args) . time());
+//        file_put_contents(ABSPATH . '/cron.txt', implode('/', $args) . time());
     }
 
 
